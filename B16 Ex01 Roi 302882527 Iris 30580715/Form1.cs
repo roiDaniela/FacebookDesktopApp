@@ -143,5 +143,16 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
             showMarkersOnMap();
         }
+
+        private void gmap_OnMarkerClick(GMapMarker item, MouseEventArgs e)
+        {
+            string lng = item.Position.Lng.ToString();
+            string lat = item.Position.Lat.ToString();
+
+            string s = String.Format("https://www.google.com/maps?ll={0},{1}", lng, lat);
+            webBrowser2.Navigate(s);
+
+            webBrowser1.Navigate(item.ToolTipText);
+        }
     }
 }

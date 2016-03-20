@@ -116,7 +116,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                 dLatitude = Convert.ToDouble(item.Place.Location.Latitude);
 
                 GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(dLongitude, dLatitude), GMarkerGoogleType.red);
-                marker.ToolTipText = item.Place.Location.City + ", " + item.Place.Location.State + " " + "(" + item.CreatedTime.ToString() + ")";
+                marker.ToolTipText = item.Place.Location.City;
                 markersOverlay.Markers.Add(marker);
                 gmap.Overlays.Add(markersOverlay);
             }
@@ -152,7 +152,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             string s = String.Format("https://www.google.com/maps?ll={0},{1}", lng, lat);
             webBrowser2.Navigate(s);
 
-            webBrowser1.Navigate(item.ToolTipText);
+            webBrowser1.Navigate(string.Format("https://en.wikipedia.org/wiki/{0}",item.ToolTipText));
         }
     }
 }

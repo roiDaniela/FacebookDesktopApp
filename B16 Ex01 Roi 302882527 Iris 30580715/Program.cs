@@ -17,7 +17,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Facebook());
-            Console.WriteLine();
         }
     }
 }

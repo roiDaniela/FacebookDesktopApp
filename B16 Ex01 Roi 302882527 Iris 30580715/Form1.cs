@@ -92,10 +92,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private void fetchUserInfo()
         {
             picture_smallPictureBox.LoadAsync(m_LoggedInUser.PictureNormalURL);
-            if (m_LoggedInUser.Posts.Count > 0)
-            {
-                textBoxStatus.Text = m_LoggedInUser.Posts[0].Message;
-            }
             
             // Add all chekins
             foreach (Checkin checkin in m_LoggedInUser.Checkins)
@@ -127,12 +123,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             loginAndInit();
         }
 
-        private void buttonSetStatus_Click(object sender, EventArgs e)
-        {
-            Status postedStatus = m_LoggedInUser.PostStatus(textBoxStatus.Text);
-            MessageBox.Show("Status Posted! ID: " + postedStatus.Id);
-        }
-
         private void gmap_Load(object sender, EventArgs e)
         {
             // Initialize map:
@@ -153,6 +143,21 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             webBrowser2.Navigate(s);
 
             webBrowser1.Navigate(string.Format("https://en.wikipedia.org/wiki/{0}",item.ToolTipText));
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bindingNavigator1_RefreshItems(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -28,7 +28,11 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
         private void loginAndInit()
         {
-            /// Use the FacebookService.Login method to display the login form to any user who wish to use this application.
+            // Acess Token Roi: "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD"
+            // Acess Token Iris: "CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD"
+            LoginResult result = FacebookService.Connect("CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD");
+
+            /*/// Use the FacebookService.Login method to display the login form to any user who wish to use this application.
             /// You can then save the result.AccessToken for future auto-connect to this user:
             LoginResult result = FacebookService.Login("1587985424858781", 
                 "public_profile",
@@ -77,7 +81,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             // The documentation regarding facebook login and permissions can be found here: 
             // https://developers.facebook.com/docs/facebook-login/permissions#reference
 
-
+            */
             if (!string.IsNullOrEmpty(result.AccessToken))
             {
                 m_LoggedInUser = result.LoggedInUser;
@@ -108,14 +112,27 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
             foreach (Checkin item in m_LocationCheckInList)
             {
-                dLongitude = Convert.ToDouble(item.Place.Location.Longitude);
-                dLatitude = Convert.ToDouble(item.Place.Location.Latitude);
+                if (item.Place.Location != null)
+                {
+                    dLongitude = Convert.ToDouble(item.Place.Location.Longitude);
+                    dLatitude = Convert.ToDouble(item.Place.Location.Latitude);
 
-                GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(dLongitude, dLatitude), GMarkerGoogleType.red);
-                marker.ToolTipText = item.Place.Location.City;
-                markersOverlay.Markers.Add(marker);
-                gmap.Overlays.Add(markersOverlay);
+                    GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(dLatitude, dLongitude), GMarkerGoogleType.red);
+                    marker.ToolTipText = item.Place.Name + " " + item.Place.Location.City;
+                    markersOverlay.Markers.Add(marker);
+                    gmap.Overlays.Add(markersOverlay);
+                }
             }
+        }
+
+        private void checkButtonMinusZoomEnabled()
+        {
+            buttonMinusZoom.Enabled = (gmap.Zoom > gmap.MinZoom);
+        }
+
+        private void checkButtonPlusZoomEnabled()
+        {
+            buttonPlusZoom.Enabled = (gmap.Zoom < gmap.MaxZoom);
         }
 
         private void buttonLogin_Click(object sender, EventArgs e)
@@ -129,7 +146,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             gmap.MapProvider = GMap.NET.MapProviders.BingMapProvider.Instance;
             GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerOnly;
             gmap.DragButton = System.Windows.Forms.MouseButtons.Left;
-            gmap.Zoom = 1;
+
+            checkButtonMinusZoomEnabled();
+            checkButtonPlusZoomEnabled();
 
             showMarkersOnMap();
         }
@@ -139,7 +158,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             string lng = item.Position.Lng.ToString();
             string lat = item.Position.Lat.ToString();
 
-            string s = String.Format("https://www.google.com/maps?ll={0},{1}", lng, lat);
+            string s = String.Format("http://www.bing.com/maps/default.aspx?cp={0}~-{1}&ss=yp.YN000x45678&lvl=14&trfc=1", lng, lat);
             webBrowser2.Navigate(s);
 
             webBrowser1.Navigate(string.Format("https://en.wikipedia.org/wiki/{0}",item.ToolTipText));
@@ -158,6 +177,22 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private void bindingNavigator1_RefreshItems(object sender, EventArgs e)
         {
 
+        }
+
+        private void buttonPlusZoom_Click(object sender, EventArgs e)
+        {
+            gmap.Zoom++;
+
+            checkButtonPlusZoomEnabled();
+            checkButtonMinusZoomEnabled();
+        }
+
+        private void buttonMinusZoom_Click(object sender, EventArgs e)
+        {
+            gmap.Zoom--;
+
+            checkButtonMinusZoomEnabled();
+            checkButtonPlusZoomEnabled();
         }
     }
 }

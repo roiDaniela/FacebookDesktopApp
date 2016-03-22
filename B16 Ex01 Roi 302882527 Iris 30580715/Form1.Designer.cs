@@ -28,9 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.buttonLogin = new System.Windows.Forms.Button();
             this.picture_smallPictureBox = new System.Windows.Forms.PictureBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.contextMenuStripAddChekin = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addChekinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeChekinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.buttonRate = new System.Windows.Forms.Button();
             this.checkedListBoxParametersToRateFriends = new System.Windows.Forms.CheckedListBox();
@@ -41,14 +45,15 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.buttonMinusZoom = new System.Windows.Forms.Button();
+            this.buttonPlusZoom = new System.Windows.Forms.Button();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.webBrowser2 = new System.Windows.Forms.WebBrowser();
-            this.buttonPlusZoom = new System.Windows.Forms.Button();
-            this.buttonMinusZoom = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picture_smallPictureBox)).BeginInit();
             this.tabControl1.SuspendLayout();
+            this.contextMenuStripAddChekin.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -86,6 +91,7 @@
             // 
             // tabControl1
             // 
+            this.tabControl1.ContextMenuStrip = this.contextMenuStripAddChekin;
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -94,6 +100,29 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(745, 327);
             this.tabControl1.TabIndex = 48;
+            // 
+            // contextMenuStripAddChekin
+            // 
+            this.contextMenuStripAddChekin.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addChekinToolStripMenuItem,
+            this.removeChekinToolStripMenuItem});
+            this.contextMenuStripAddChekin.Name = "contextMenuStripAddChekin";
+            this.contextMenuStripAddChekin.Size = new System.Drawing.Size(153, 48);
+            // 
+            // addChekinToolStripMenuItem
+            // 
+            this.addChekinToolStripMenuItem.Name = "addChekinToolStripMenuItem";
+            this.addChekinToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addChekinToolStripMenuItem.Text = "add chekin";
+            this.addChekinToolStripMenuItem.Click += new System.EventHandler(this.addChekinToolStripMenuItem_Click);
+            // 
+            // removeChekinToolStripMenuItem
+            // 
+            this.removeChekinToolStripMenuItem.Enabled = false;
+            this.removeChekinToolStripMenuItem.Name = "removeChekinToolStripMenuItem";
+            this.removeChekinToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.removeChekinToolStripMenuItem.Text = "remove chekin";
+            this.removeChekinToolStripMenuItem.Click += new System.EventHandler(this.removeChekinToolStripMenuItem_Click);
             // 
             // tabPage1
             // 
@@ -221,6 +250,26 @@
             this.splitContainer1.SplitterDistance = 484;
             this.splitContainer1.TabIndex = 1;
             // 
+            // buttonMinusZoom
+            // 
+            this.buttonMinusZoom.Location = new System.Drawing.Point(0, 29);
+            this.buttonMinusZoom.Name = "buttonMinusZoom";
+            this.buttonMinusZoom.Size = new System.Drawing.Size(42, 23);
+            this.buttonMinusZoom.TabIndex = 2;
+            this.buttonMinusZoom.Text = "-";
+            this.buttonMinusZoom.UseVisualStyleBackColor = true;
+            this.buttonMinusZoom.Click += new System.EventHandler(this.buttonMinusZoom_Click);
+            // 
+            // buttonPlusZoom
+            // 
+            this.buttonPlusZoom.Location = new System.Drawing.Point(0, 0);
+            this.buttonPlusZoom.Name = "buttonPlusZoom";
+            this.buttonPlusZoom.Size = new System.Drawing.Size(42, 23);
+            this.buttonPlusZoom.TabIndex = 1;
+            this.buttonPlusZoom.Text = "+";
+            this.buttonPlusZoom.UseVisualStyleBackColor = true;
+            this.buttonPlusZoom.Click += new System.EventHandler(this.buttonPlusZoom_Click);
+            // 
             // gmap
             // 
             this.gmap.Bearing = 0F;
@@ -248,7 +297,10 @@
             this.gmap.TabIndex = 0;
             this.gmap.Zoom = 2D;
             this.gmap.OnMarkerClick += new GMap.NET.WindowsForms.MarkerClick(this.gmap_OnMarkerClick);
+            this.gmap.OnMarkerEnter += new GMap.NET.WindowsForms.MarkerEnter(this.gmap_OnMarkerEnter);
+            this.gmap.OnMarkerLeave += new GMap.NET.WindowsForms.MarkerLeave(this.gmap_OnMarkerLeave);
             this.gmap.Load += new System.EventHandler(this.gmap_Load);
+            this.gmap.MouseHover += new System.EventHandler(this.gmap_MouseHover);
             // 
             // splitContainer2
             // 
@@ -288,26 +340,6 @@
             this.webBrowser2.Size = new System.Drawing.Size(243, 191);
             this.webBrowser2.TabIndex = 0;
             // 
-            // buttonPlusZoom
-            // 
-            this.buttonPlusZoom.Location = new System.Drawing.Point(0, 0);
-            this.buttonPlusZoom.Name = "buttonPlusZoom";
-            this.buttonPlusZoom.Size = new System.Drawing.Size(42, 23);
-            this.buttonPlusZoom.TabIndex = 1;
-            this.buttonPlusZoom.Text = "+";
-            this.buttonPlusZoom.UseVisualStyleBackColor = true;
-            this.buttonPlusZoom.Click += new System.EventHandler(this.buttonPlusZoom_Click);
-            // 
-            // buttonMinusZoom
-            // 
-            this.buttonMinusZoom.Location = new System.Drawing.Point(0, 29);
-            this.buttonMinusZoom.Name = "buttonMinusZoom";
-            this.buttonMinusZoom.Size = new System.Drawing.Size(42, 23);
-            this.buttonMinusZoom.TabIndex = 2;
-            this.buttonMinusZoom.Text = "-";
-            this.buttonMinusZoom.UseVisualStyleBackColor = true;
-            this.buttonMinusZoom.Click += new System.EventHandler(this.buttonMinusZoom_Click);
-            // 
             // Facebook
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -319,6 +351,7 @@
             this.Text = "Facebook Desktop App";
             ((System.ComponentModel.ISupportInitialize)(this.picture_smallPictureBox)).EndInit();
             this.tabControl1.ResumeLayout(false);
+            this.contextMenuStripAddChekin.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
@@ -359,5 +392,8 @@
         private System.Windows.Forms.Button buttonRate;
         private System.Windows.Forms.Button buttonMinusZoom;
         private System.Windows.Forms.Button buttonPlusZoom;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripAddChekin;
+        private System.Windows.Forms.ToolStripMenuItem addChekinToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeChekinToolStripMenuItem;
     }
 }

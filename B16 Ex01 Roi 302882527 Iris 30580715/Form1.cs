@@ -24,7 +24,8 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         }
 
         User m_LoggedInUser;
-        List<Checkin> m_LocationCheckInList = new List<Checkin>();
+        double currMaplat;
+        double currMapLng;
 
         private void loginAndInit()
         {
@@ -96,12 +97,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private void fetchUserInfo()
         {
             picture_smallPictureBox.LoadAsync(m_LoggedInUser.PictureNormalURL);
-            
-            // Add all chekins
-            foreach (Checkin checkin in m_LoggedInUser.Checkins)
-            {
-                m_LocationCheckInList.Add(checkin);
-            }
         }
 
         private void showMarkersOnMap()
@@ -110,7 +105,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             double dLongitude;
             double dLatitude;
 
-            foreach (Checkin item in m_LocationCheckInList)
+            foreach (Checkin item in m_LoggedInUser.Checkins)
             {
                 if (item.Place.Location != null)
                 {
@@ -194,5 +189,56 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             checkButtonMinusZoomEnabled();
             checkButtonPlusZoomEnabled();
         }
+
+        private void addChekinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void removeChekinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void gmap_OnMarkerLeave(GMapMarker item)
+        {
+            // set remove chekin as false
+            contextMenuStripAddChekin.Items[1].Enabled = false;
+        }
+
+        private void gmap_OnMarkerEnter(GMapMarker item)
+        {
+            // set remove chekin as true
+            contextMenuStripAddChekin.Items[1].Enabled = true;
+        }
+
+        private void gmap_MouseHover(object sender, /*MouseEventArgs*/EventArgs e)
+        {
+            //currMaplat = gmap.FromLocalToLatLng(e.X, e.Y).Lat;
+            //currMapLng = gmap.FromLocalToLatLng(e.X, e.Y).Lng;
+        }
+
+
+        //private void map_MouseClick(object sender, MouseEventArgs e)
+        //{
+        //    if (e.Button == System.Windows.Forms.MouseButtons.Left)
+        //    {
+        //        double lat = map.FromLocalToLatLng(e.X, e.Y).Lat;
+        //        double lng = map.FromLocalToLatLng(e.X, e.Y).Lng;
+        //    }
+
+        //    List<Placemark> plc = null;
+        //    var st = GMapProviders.GoogleMap.GetPlacemarks(map.FromLocalToLatLng(e.X, e.Y), out plc);
+        //    if (st == GeoCoderStatusCode.G_GEO_SUCCESS && plc != null)
+        //    {
+        //        foreach (var pl in plc)
+        //        {
+        //            if (!string.IsNullOrEmpty(pl.PostalCodeNumber))
+        //            {
+        //                Debug.WriteLine("Accuracy: " + pl.Accuracy + ", " + pl.Address + ", PostalCodeNumber: " + pl.PostalCodeNumber);
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

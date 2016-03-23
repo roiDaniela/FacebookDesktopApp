@@ -26,6 +26,27 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         User m_LoggedInUser;
         double currMaplat;
         double currMapLng;
+        private const int k_SharedPhotosCheckedListIndex = 0;
+        private const int k_SharedEventsCheckedListIndex = 1;
+        private const int k_SharedCheckinsCheckedListIndex = 2;
+        private const int k_SharedLikedPagesCheckedListIndex = 3;
+        private const int k_LikedMyPhotosCheckedListIndex = 4;
+        private const int k_CommentedOnPhotosCheckedListIndex = 5;
+        private const int k_LikedMyPostsCheckedListIndex = 6;
+        private const int k_CommentedOnPostsCheckedListIndex = 7;
+
+         private class RatedUser
+         {
+              private int? m_UserID;
+              private int m_Score;
+
+              public RatedUser() 
+              {
+                   m_UserID = null;
+                   m_Score = 0;
+              }
+
+         }
 
         private void loginAndInit()
         {
@@ -135,6 +156,11 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             loginAndInit();
         }
 
+        private void buttonRate_Click(object sender, EventArgs e)
+        {
+             rateFriends();
+        }
+
         private void gmap_Load(object sender, EventArgs e)
         {
             // Initialize map:
@@ -240,5 +266,79 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         //        }
         //    }
         //}
+
+         private void rateFriends()
+        {
+         //     Dictionary
+              RatedUser[] topFriends = new RatedUser[] {};
+
+              
+              if(checkedListBoxParametersToRateFriends.CheckedItems.Count == 0)
+              {
+                   textBoxNoRateParametersSelected.Visible = true;
+              }
+              else
+              {
+                   textBoxNoRateParametersSelected.Visible = false;
+
+                  // if (checkedListBoxParametersToRateFriends.CheckedItems)
+                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedPhotosCheckedListIndex) == true)
+                   {
+                        
+                   }
+                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedEventsCheckedListIndex) == true)
+                   {
+                        UpdateTopFriendsAccordingToSharedEvents(topFriends);   
+                   }
+                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedCheckinsCheckedListIndex) == true)
+                   {
+
+                   }
+                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedLikedPagesCheckedListIndex) == true)
+                   {
+
+                   }
+                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_LikedMyPhotosCheckedListIndex) == true)
+                   {
+
+                   }
+                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_CommentedOnPhotosCheckedListIndex) == true)
+                   {
+
+                   }
+                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_LikedMyPostsCheckedListIndex) == true)
+                   {
+
+                   }
+                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_CommentedOnPostsCheckedListIndex) == true)
+                   {
+
+                   }
+                   
+                   
+              }
+        }
+
+
+         private void UpdateTopFriendsAccordingToSharedEvents(RatedUser[] io_topFriends)
+         {
+              foreach (Event userEvent in m_LoggedInUser.Events)
+              {
+                   foreach(User attendingUser in userEvent.AttendingUsers)
+                   {
+                        if (m_LoggedInUser.Friends.Contains(attendingUser))
+                        {
+                            
+                        }
+                   }
+
+              }
+
+         }
+
+         private void textBoxNoRateParametersSelected_TextChanged(object sender, EventArgs e)
+         {
+
+         }
     }
 }

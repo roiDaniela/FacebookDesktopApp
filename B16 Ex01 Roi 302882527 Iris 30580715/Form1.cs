@@ -12,6 +12,7 @@ using FacebookWrapper;
 using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
 using GMap.NET;
+using GMap.NET.MapProviders;
 
 namespace B16_Ex01_Roi_302882527_Iris_30580715
 {
@@ -24,8 +25,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         }
 
         User m_LoggedInUser;
+        GMapMarker lastMarker;
         double currMaplat;
         double currMapLng;
+
         private const int k_SharedPhotosCheckedListIndex = 0;
         private const int k_SharedEventsCheckedListIndex = 1;
         private const int k_SharedCheckinsCheckedListIndex = 2;
@@ -52,7 +55,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         {
             // Acess Token Roi: "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD"
             // Acess Token Iris: "CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD"
-            LoginResult result = FacebookService.Connect("CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD");
+            LoginResult result = FacebookService.Connect("CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD");
 
             /*/// Use the FacebookService.Login method to display the login form to any user who wish to use this application.
             /// You can then save the result.AccessToken for future auto-connect to this user:
@@ -118,6 +121,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private void fetchUserInfo()
         {
             picture_smallPictureBox.LoadAsync(m_LoggedInUser.PictureNormalURL);
+            tabControl1.Enabled = true;
         }
 
         private void showMarkersOnMap()
@@ -135,8 +139,8 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
                     GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(dLatitude, dLongitude), GMarkerGoogleType.red);
                     marker.ToolTipText = item.Place.Name + " " + item.Place.Location.City;
-                    markersOverlay.Markers.Add(marker);
                     gmap.Overlays.Add(markersOverlay);
+                    markersOverlay.Markers.Add(marker);
                 }
             }
         }
@@ -170,8 +174,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
             checkButtonMinusZoomEnabled();
             checkButtonPlusZoomEnabled();
-
-            showMarkersOnMap();
         }
 
         private void gmap_OnMarkerClick(GMapMarker item, MouseEventArgs e)
@@ -218,30 +220,49 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
         private void addChekinToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (m_LoggedInUser != null)
+            {
 
+            }
         }
 
         private void removeChekinToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (m_LoggedInUser != null)
+            {
+                foreach (Checkin checkin in m_LoggedInUser.Checkins)
+                {
+                    if(checkin.Place.Location.Latitude == lastMarker.Position.Lat &&
+                       checkin.Place.Location.Longitude == lastMarker.Position.Lng)
+                    {
+                        m_LoggedInUser.Checkins.Remove(checkin);
 
+                        gmap.Overlays.Clear();
+
+                        showMarkersOnMap();
+
+                        break;
+                    }
+                }
+            }
+
+            showMarkersOnMap();
         }
 
         private void gmap_OnMarkerLeave(GMapMarker item)
         {
             // set remove chekin as false
             contextMenuStripAddChekin.Items[1].Enabled = false;
+
+            lastMarker = null;
         }
 
         private void gmap_OnMarkerEnter(GMapMarker item)
         {
             // set remove chekin as true
             contextMenuStripAddChekin.Items[1].Enabled = true;
-        }
 
-        private void gmap_MouseHover(object sender, /*MouseEventArgs*/EventArgs e)
-        {
-            //currMaplat = gmap.FromLocalToLatLng(e.X, e.Y).Lat;
-            //currMapLng = gmap.FromLocalToLatLng(e.X, e.Y).Lng;
+            lastMarker = item;
         }
 
 
@@ -267,7 +288,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         //    }
         //}
 
-         private void rateFriends()
+        private void rateFriends()
         {
          //     Dictionary
               RatedUser[] topFriends = new RatedUser[] {};
@@ -339,6 +360,20 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
          private void textBoxNoRateParametersSelected_TextChanged(object sender, EventArgs e)
          {
 
+         }
+
+         private void tabControl1_Selected(object sender, TabControlEventArgs e)
+         {
+             if (m_LoggedInUser != null)
+             {
+                 showMarkersOnMap();
+             }
+         }
+
+         private void contextMenuStripAddChekin_MouseClick(object sender, MouseEventArgs e)
+         {
+             currMaplat = gmap.FromLocalToLatLng(e.X, e.Y).Lat;
+             currMapLng = gmap.FromLocalToLatLng(e.X, e.Y).Lng;
          }
     }
 }

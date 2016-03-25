@@ -222,7 +222,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         {
             if (m_LoggedInUser != null)
             {
+               // m_LoggedInUser.Checkin(new Checkin());
 
+                showMarkersOnMap();
             }
         }
 
@@ -239,8 +241,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
                         gmap.Overlays.Clear();
 
-                        showMarkersOnMap();
-
                         break;
                     }
                 }
@@ -254,6 +254,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             // set remove chekin as false
             contextMenuStripAddChekin.Items[1].Enabled = false;
 
+            // Unsave last marker
             lastMarker = null;
         }
 
@@ -262,6 +263,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             // set remove chekin as true
             contextMenuStripAddChekin.Items[1].Enabled = true;
 
+            // Save last marker
             lastMarker = item;
         }
 

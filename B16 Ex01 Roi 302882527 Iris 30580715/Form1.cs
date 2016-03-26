@@ -119,7 +119,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
             foreach (Checkin item in m_LoggedInUser.Checkins)
             {
-                if (item.Place.Location != null)
+                if ((item.Place.Location != null) && 
+                    (item.CreatedTime.Value < dateTimePickerTo.Value) &&
+                    (item.CreatedTime.Value > dateTimePickerFrom.Value))
                 {
                     dLongitude = Convert.ToDouble(item.Place.Location.Longitude);
                     dLatitude = Convert.ToDouble(item.Place.Location.Latitude);
@@ -165,13 +167,29 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
         private void gmap_OnMarkerClick(GMapMarker item, MouseEventArgs e)
         {
-            string lng = item.Position.Lng.ToString();
-            string lat = item.Position.Lat.ToString();
+            double? lng = item.Position.Lng;
+            double? lat = item.Position.Lat;
 
-            string s = String.Format("http://www.bing.com/maps/default.aspx?cp={0}~-{1}&ss=yp.YN000x45678&lvl=14&trfc=1", lng, lat);
-            webBrowser2.Navigate(s);
+            // Do a google search on the place
+            webBrowserGooglecheckin.Navigate(string.Format("https://www.google.co.il/search?q={0}", item.ToolTipText.Replace(" ", "+")));
 
-            webBrowser1.Navigate(string.Format("https://en.wikipedia.org/wiki/{0}",item.ToolTipText));
+            // Details about the checkin
+            Predicate<Checkin> checkinFinder = (Checkin c) => { return (c.Place.Location != null) && (c.Place.Location.Latitude == lat) && (c.Place.Location.Longitude == lng); };
+            Checkin currCheckin = m_LoggedInUser.Checkins.Find(checkinFinder);
+            
+            String names = "";
+
+            foreach (User friend in m_LoggedInUser.Friends)
+            {
+                if (friend.Checkins.Find(checkinFinder) != null)
+                {
+                    names += (friend.Name + " ");
+                }
+            }
+
+            richTextBoxCheckinDetails.Text = "Place: " + currCheckin.Name + "\n" +
+                                             "Time: " + currCheckin.UpdateTime.ToString() + "\n" +
+                                             "Friends who was there also: " + names + "\n";
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
@@ -433,6 +451,14 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
          {
              if (m_LoggedInUser != null)
              {
+                 char[] delimiterChars = { '/' };
+                 string[] birthdate = m_LoggedInUser.Birthday.Split(delimiterChars);
+                 int year = Int32.Parse(birthdate[2]);
+                 int month = Int32.Parse(birthdate[1]);
+                 int day = Int32.Parse(birthdate[0]);
+                 //DateTime dt = new DateTime(year, month, day);
+                 //dateTimePickerFrom.Value = dt;
+                 dateTimePickerTo.Value = DateTime.Today;
                  showMarkersOnMap();
              }
          }
@@ -441,6 +467,16 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
          {
              currMaplat = gmap.FromLocalToLatLng(e.X, e.Y).Lat;
              currMapLng = gmap.FromLocalToLatLng(e.X, e.Y).Lng;
+         }
+
+         private void dateTimePickerFrom_ValueChanged(object sender, EventArgs e)
+         {
+             showMarkersOnMap();
+         }
+
+         private void dateTimePickerTo_ValueChanged(object sender, EventArgs e)
+         {
+             showMarkersOnMap();
          }
     }
 }

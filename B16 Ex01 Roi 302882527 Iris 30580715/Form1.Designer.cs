@@ -51,9 +51,13 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             this.buttonPlusZoom = new System.Windows.Forms.Button();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
-            this.webBrowser2 = new System.Windows.Forms.WebBrowser();
+            this.webBrowserGooglecheckin = new System.Windows.Forms.WebBrowser();
+            this.richTextBoxCheckinDetails = new System.Windows.Forms.RichTextBox();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.dateTimePickerFrom = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePickerTo = new System.Windows.Forms.DateTimePicker();
+            this.labelFromDate = new System.Windows.Forms.Label();
+            this.labelToDate = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picture_smallPictureBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.contextMenuStripAddChekin.SuspendLayout();
@@ -112,7 +116,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             this.addChekinToolStripMenuItem,
             this.removeChekinToolStripMenuItem});
             this.contextMenuStripAddChekin.Name = "contextMenuStripAddChekin";
-            this.contextMenuStripAddChekin.Size = new System.Drawing.Size(153, 70);
+            this.contextMenuStripAddChekin.Size = new System.Drawing.Size(153, 48);
             this.contextMenuStripAddChekin.MouseClick += new System.Windows.Forms.MouseEventHandler(this.contextMenuStripAddChekin_MouseClick);
             // 
             // addChekinToolStripMenuItem
@@ -260,6 +264,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.labelToDate);
+            this.splitContainer1.Panel1.Controls.Add(this.labelFromDate);
+            this.splitContainer1.Panel1.Controls.Add(this.dateTimePickerTo);
+            this.splitContainer1.Panel1.Controls.Add(this.dateTimePickerFrom);
             this.splitContainer1.Panel1.Controls.Add(this.buttonMinusZoom);
             this.splitContainer1.Panel1.Controls.Add(this.buttonPlusZoom);
             this.splitContainer1.Panel1.Controls.Add(this.gmap);
@@ -321,7 +329,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             this.gmap.OnMarkerEnter += new GMap.NET.WindowsForms.MarkerEnter(this.gmap_OnMarkerEnter);
             this.gmap.OnMarkerLeave += new GMap.NET.WindowsForms.MarkerLeave(this.gmap_OnMarkerLeave);
             this.gmap.Load += new System.EventHandler(this.gmap_Load);
-            
             // 
             // splitContainer2
             // 
@@ -332,38 +339,73 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.webBrowser1);
+            this.splitContainer2.Panel1.Controls.Add(this.webBrowserGooglecheckin);
             this.splitContainer2.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.webBrowser2);
+            this.splitContainer2.Panel2.Controls.Add(this.richTextBoxCheckinDetails);
             this.splitContainer2.Size = new System.Drawing.Size(243, 295);
-            this.splitContainer2.SplitterDistance = 100;
+            this.splitContainer2.SplitterDistance = 171;
             this.splitContainer2.TabIndex = 0;
             // 
-            // webBrowser1
+            // webBrowserGooglecheckin
             // 
-            this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.webBrowser1.Location = new System.Drawing.Point(0, 0);
-            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(243, 100);
-            this.webBrowser1.TabIndex = 0;
+            this.webBrowserGooglecheckin.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.webBrowserGooglecheckin.Location = new System.Drawing.Point(0, 0);
+            this.webBrowserGooglecheckin.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowserGooglecheckin.Name = "webBrowserGooglecheckin";
+            this.webBrowserGooglecheckin.Size = new System.Drawing.Size(243, 171);
+            this.webBrowserGooglecheckin.TabIndex = 0;
             // 
-            // webBrowser2
+            // richTextBoxCheckinDetails
             // 
-            this.webBrowser2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.webBrowser2.Location = new System.Drawing.Point(0, 0);
-            this.webBrowser2.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webBrowser2.Name = "webBrowser2";
-            this.webBrowser2.ScriptErrorsSuppressed = true;
-            this.webBrowser2.Size = new System.Drawing.Size(243, 191);
-            this.webBrowser2.TabIndex = 0;
+            this.richTextBoxCheckinDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richTextBoxCheckinDetails.Location = new System.Drawing.Point(0, 0);
+            this.richTextBoxCheckinDetails.Name = "richTextBoxCheckinDetails";
+            this.richTextBoxCheckinDetails.Size = new System.Drawing.Size(243, 120);
+            this.richTextBoxCheckinDetails.TabIndex = 0;
+            this.richTextBoxCheckinDetails.Text = "";
             // 
             // errorProvider1
             // 
             this.errorProvider1.ContainerControl = this;
+            // 
+            // dateTimePickerFrom
+            // 
+            this.dateTimePickerFrom.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerFrom.Location = new System.Drawing.Point(30, 55);
+            this.dateTimePickerFrom.Name = "dateTimePickerFrom";
+            this.dateTimePickerFrom.Size = new System.Drawing.Size(80, 20);
+            this.dateTimePickerFrom.TabIndex = 3;
+            this.dateTimePickerFrom.ValueChanged += new System.EventHandler(this.dateTimePickerFrom_ValueChanged);
+            // 
+            // dateTimePickerTo
+            // 
+            this.dateTimePickerTo.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerTo.Location = new System.Drawing.Point(30, 81);
+            this.dateTimePickerTo.Name = "dateTimePickerTo";
+            this.dateTimePickerTo.Size = new System.Drawing.Size(80, 20);
+            this.dateTimePickerTo.TabIndex = 4;
+            this.dateTimePickerTo.ValueChanged += new System.EventHandler(this.dateTimePickerTo_ValueChanged);
+            // 
+            // labelFromDate
+            // 
+            this.labelFromDate.AutoSize = true;
+            this.labelFromDate.Location = new System.Drawing.Point(0, 55);
+            this.labelFromDate.Name = "labelFromDate";
+            this.labelFromDate.Size = new System.Drawing.Size(33, 13);
+            this.labelFromDate.TabIndex = 5;
+            this.labelFromDate.Text = "From:";
+            // 
+            // labelToDate
+            // 
+            this.labelToDate.AutoSize = true;
+            this.labelToDate.Location = new System.Drawing.Point(-3, 79);
+            this.labelToDate.Name = "labelToDate";
+            this.labelToDate.Size = new System.Drawing.Size(26, 13);
+            this.labelToDate.TabIndex = 6;
+            this.labelToDate.Text = "To: ";
             // 
             // Facebook
             // 
@@ -385,6 +427,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
@@ -407,8 +450,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private GMap.NET.WindowsForms.GMapControl gmap;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.WebBrowser webBrowser1;
-        private System.Windows.Forms.WebBrowser webBrowser2;
+        private System.Windows.Forms.WebBrowser webBrowserGooglecheckin;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox1;
@@ -423,5 +465,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private System.Windows.Forms.ToolStripMenuItem removeChekinToolStripMenuItem;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.TextBox textBoxNoRateParametersSelected;
+        private RichTextBox richTextBoxCheckinDetails;
+        private Label labelToDate;
+        private Label labelFromDate;
+        private DateTimePicker dateTimePickerTo;
+        private DateTimePicker dateTimePickerFrom;
     }
 }

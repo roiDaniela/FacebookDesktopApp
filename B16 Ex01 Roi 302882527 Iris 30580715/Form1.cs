@@ -38,24 +38,11 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private const int k_LikedMyPostsCheckedListIndex = 6;
         private const int k_CommentedOnPostsCheckedListIndex = 7;
 
-         private class RatedUser
-         {
-              private int? m_UserID;
-              private int m_Score;
-
-              public RatedUser() 
-              {
-                   m_UserID = null;
-                   m_Score = 0;
-              }
-
-         }
-
         private void loginAndInit()
         {
             // Acess Token Roi: "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD"
             // Acess Token Iris: "CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD"
-            LoginResult result = FacebookService.Connect("CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD");
+             LoginResult result = FacebookService.Connect("CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD");
 
             /*/// Use the FacebookService.Login method to display the login form to any user who wish to use this application.
             /// You can then save the result.AccessToken for future auto-connect to this user:
@@ -292,8 +279,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
         private void rateFriends()
         {
-         //     Dictionary
-              RatedUser[] topFriends = new RatedUser[] {};
+             Dictionary<string, int> topFriends = new Dictionary<string, int>();
 
               
               if(checkedListBoxParametersToRateFriends.CheckedItems.Count == 0)
@@ -307,7 +293,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                   // if (checkedListBoxParametersToRateFriends.CheckedItems)
                    if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedPhotosCheckedListIndex) == true)
                    {
-                        
+                        UpdateTopFriendsAccordingToSharedPhotos(topFriends);
                    }
                    if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedEventsCheckedListIndex) == true)
                    {
@@ -315,7 +301,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    }
                    if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedCheckinsCheckedListIndex) == true)
                    {
-
+                        UpdateTopFriendsAccordingToSharedCheckins(topFriends);
                    }
                    if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedLikedPagesCheckedListIndex) == true)
                    {
@@ -343,7 +329,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         }
 
 
-         private void UpdateTopFriendsAccordingToSharedEvents(RatedUser[] io_topFriends)
+        private void UpdateTopFriendsAccordingToSharedEvents(Dictionary<string, int> io_topFriends)
          {
               foreach (Event userEvent in m_LoggedInUser.Events)
               {
@@ -351,17 +337,96 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    {
                         if (m_LoggedInUser.Friends.Contains(attendingUser))
                         {
-                            
+                             if(io_topFriends.ContainsKey(attendingUser.Id) == true)
+                             {
+                                  io_topFriends[attendingUser.Id] = io_topFriends[attendingUser.Id]++;
+                             }
+                             else
+                             {
+                                  io_topFriends.Add(attendingUser.Id, 1);
+
+                             }                                                        
                         }
                    }
 
               }
-
          }
+
+         
+         private void UpdateTopFriendsAccordingToSharedPhotos(Dictionary<string, int> io_topFriends)
+         {
+             // foreach (Photo userPhoto in m_LoggedInUser.PhotosTaggedIn)
+             //{
+             //     foreach (User taggedUser in userPhoto.Tags.)
+             //     {
+             //          if (m_LoggedInUser.Friends.Contains(taggedUser))
+             //          {
+             //               if (io_topFriends.ContainsKey(taggedUser.Id) == true)
+             //               {
+             //                    io_topFriends[taggedUser.Id] = io_topFriends[taggedUser.Id]++;
+             //               }
+             //               else
+             //               {
+             //                    io_topFriends.Add(taggedUser.Id, 1);
+
+             //               }
+             //          }
+             //     }
+
+             //}
+        }
+ 
 
          private void textBoxNoRateParametersSelected_TextChanged(object sender, EventArgs e)
          {
 
+         }
+
+
+         private void UpdateTopFriendsAccordingToSharedCheckins(Dictionary<string, int> io_topFriends)
+         {
+              foreach (Checkin userCheckin in m_LoggedInUser.Checkins)
+              {
+                   foreach (User taggedUser in userCheckin.TaggedUsers)
+                   {
+                        if (m_LoggedInUser.Friends.Contains(taggedUser))
+                        {
+                             if (io_topFriends.ContainsKey(taggedUser.Id) == true)
+                             {
+                                  io_topFriends[taggedUser.Id] = io_topFriends[taggedUser.Id]++;
+                             }
+                             else
+                             {
+                                  io_topFriends.Add(taggedUser.Id, 1);
+
+                             }
+                        }
+                   }
+
+              }
+         }
+
+         private void UpdateTopFriendsAccordingToSharedPages(Dictionary<string, int> io_topFriends)
+         {
+              foreach (Page page in m_LoggedInUser.LikedPages)
+              {
+                   foreach (User friend in m_LoggedInUser.Friends)
+                   {
+                        if (friend.LikedPages.Contains(page) == true)
+                        {
+                             if (io_topFriends.ContainsKey(friend.Id) == true)
+                             {
+                                  io_topFriends[friend.Id] = io_topFriends[friend.Id]++;
+                             }
+                             else
+                             {
+                                  io_topFriends.Add(friend.Id, 1);
+
+                             }
+                        }
+                   }
+
+              }
          }
 
          private void tabControl1_Selected(object sender, TabControlEventArgs e)

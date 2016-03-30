@@ -157,6 +157,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private void gmap_Load(object sender, EventArgs e)
         {
             // Initialize map:
+            //
             gmap.MapProvider = GMap.NET.MapProviders.BingMapProvider.Instance;
             GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerOnly;
             gmap.DragButton = System.Windows.Forms.MouseButtons.Left;
@@ -314,7 +315,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               else
               {
                    textBoxNoRateParametersSelected.Visible = false;
-                   
+
                    if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedPhotosCheckedListIndex) == true)
                    {
                         updateTopFriendsAccordingToSharedPhotos(topFriends);
@@ -362,9 +363,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    pictureBoxFriendNo2.LoadAsync(m_LoggedInUser.PictureNormalURL);
                    pictureBoxFriendNo4.LoadAsync(m_LoggedInUser.PictureSmallURL);
 
-                
 
-
+                   
+                   
 
 
                    

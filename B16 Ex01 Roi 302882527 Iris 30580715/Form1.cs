@@ -386,7 +386,20 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
              return user;
         }
 
-        private void updateTopFriendsAccordingToSharedEvents(Dictionary<string, int> io_topFriends)
+        
+         private void increaseFriendRating(Dictionary<string, int> io_topFriends, string i_friendId)
+        {
+             if (io_topFriends.ContainsKey(i_friendId) == true)
+             {
+                  io_topFriends[i_friendId] = io_topFriends[i_friendId]++;
+             }
+             else
+             {
+                  io_topFriends.Add(i_friendId, 1);
+             }    
+        }
+         
+         private void updateTopFriendsAccordingToSharedEvents(Dictionary<string, int> io_topFriends)
          {
               foreach(Event userEvent in m_LoggedInUser.Events)
               {
@@ -394,18 +407,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    {
                         if (m_LoggedInUser.Friends.Contains(attendingUser))
                         {
-                             if(io_topFriends.ContainsKey(attendingUser.Id) == true)
-                             {
-                                  io_topFriends[attendingUser.Id] = io_topFriends[attendingUser.Id]++;
-                             }
-                             else
-                             {
-                                  io_topFriends.Add(attendingUser.Id, 1);
-
-                             }                                                        
+                             increaseFriendRating(io_topFriends, attendingUser.Id);                                                       
                         }
                    }
-
               }
          }
 
@@ -416,20 +420,12 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
              //{
              //     foreach(User taggedUser in userPhoto.Tags.)
              //     {
-             //          if (m_LoggedInUser.Friends.Contains(taggedUser))
+              //                                      
+              //            if (m_LoggedInUser.Friends.Contains(taggedUser))
              //          {
-             //               if (io_topFriends.ContainsKey(taggedUser.Id) == true)
-             //               {
-             //                    io_topFriends[taggedUser.Id] = io_topFriends[taggedUser.Id]++;
-             //               }
-             //               else
-             //               {
-             //                    io_topFriends.Add(taggedUser.Id, 1);
-
-             //               }
+              //              increaseFriendRating(io_topFriends, taggedUser.Id);
              //          }
              //     }
-
              //}
         }
  
@@ -448,18 +444,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    {
                         if (m_LoggedInUser.Friends.Contains(taggedUser))
                         {
-                             if (io_topFriends.ContainsKey(taggedUser.Id) == true)
-                             {
-                                  io_topFriends[taggedUser.Id] = io_topFriends[taggedUser.Id]++;
-                             }
-                             else
-                             {
-                                  io_topFriends.Add(taggedUser.Id, 1);
-
-                             }
+                             increaseFriendRating(io_topFriends, taggedUser.Id);
                         }
                    }
-
               }
          }
 
@@ -471,18 +458,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    {
                         if (friend.LikedPages.Contains(page) == true)
                         {
-                             if (io_topFriends.ContainsKey(friend.Id) == true)
-                             {
-                                  io_topFriends[friend.Id] = io_topFriends[friend.Id]++;
-                             }
-                             else
-                             {
-                                  io_topFriends.Add(friend.Id, 1);
-
-                             }
+                             increaseFriendRating(io_topFriends, friend.Id);
                         }
                    }
-
               }
          }
 
@@ -494,18 +472,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    {
                         if (m_LoggedInUser.Friends.Contains(userWhoLikedPhoto))
                         {
-                             if (io_topFriends.ContainsKey(userWhoLikedPhoto.Id) == true)
-                             {
-                                  io_topFriends[userWhoLikedPhoto.Id] = io_topFriends[userWhoLikedPhoto.Id]++;
-                             }
-                             else
-                             {
-                                  io_topFriends.Add(userWhoLikedPhoto.Id, 1);
-
-                             }
+                             increaseFriendRating(io_topFriends, userWhoLikedPhoto.Id);
                         }
                    }
-
               }
          }
 
@@ -517,15 +486,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    {
                         if (m_LoggedInUser.Friends.Contains(userWhoLikedPost))
                         {
-                             if (io_topFriends.ContainsKey(userWhoLikedPost.Id) == true)
-                             {
-                                  io_topFriends[userWhoLikedPost.Id] = io_topFriends[userWhoLikedPost.Id]++;
-                             }
-                             else
-                             {
-                                  io_topFriends.Add(userWhoLikedPost.Id, 1);
-
-                             }
+                             increaseFriendRating(io_topFriends, userWhoLikedPost.Id);
                         }
                    }
 
@@ -540,15 +501,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
  //                  {
  //                       if (m_LoggedInUser.Friends.Contains(userWhoCommentedOnPhoto))
  //                       {
- //                            if (io_topFriends.ContainsKey(userWhoCommentedOnPhoto.Id) == true)
- //                            {
- //                                io_topFriends[userWhoCommentedOnPhoto.Id] = io_topFriends[userWhoCommentedOnPhoto.Id]++;
- //                            }
- //                            else
- //                            {
- //                                 io_topFriends.Add(userWhoCommentedOnPhoto.Id, 1);
- //
- //                            }
+              //                          increaseFriendRating(io_topFriends, userWhoCommentedOnPhoto.Id);
  //                       }
  //                  }
  //             }
@@ -562,15 +515,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
  //                  {
  //                       if(m_LoggedInUser.Friends.Contains(userWhoCommentedOnPost)
  //                       {
- //                            if (io_topFriends.ContainsKey(userWhoCommentedOnPhoto.Id) == true)
- //                            {
- //                                io_topFriends[userWhoCommentedOnPhoto.Id] = io_topFriends[userWhoCommentedOnPhoto.Id]++;
- //                            }
- //                            else
- //                            {
- //                                 io_topFriends.Add(userWhoCommentedOnPhoto.Id, 1);
- //
- //                            }
+              //                                      increaseFriendRating(io_topFriends, userWhoCommentedOnPost.Id);
  //                       }
   //                 }
  //             }

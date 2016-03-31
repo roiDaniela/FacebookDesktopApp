@@ -575,6 +575,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
          private void dateTimePickerTo_ValueChanged(object sender, EventArgs e)
          {
              showMarkersOnMap();
+
          }
 
          private void pictureBox4_Click(object sender, EventArgs e)

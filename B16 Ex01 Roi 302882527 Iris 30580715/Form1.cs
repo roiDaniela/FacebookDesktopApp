@@ -13,7 +13,6 @@ using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
 using GMap.NET;
 using GMap.NET.MapProviders;
-using System.Diagnostics;
 
 namespace B16_Ex01_Roi_302882527_Iris_30580715
 {
@@ -27,7 +26,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
         User m_LoggedInUser;
         GMapMarker lastMarker;
-        String accessToken;
         double currMaplat;
         double currMapLng;
 
@@ -44,8 +42,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         {
             // Acess Token Roi: "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD"
             // Acess Token Iris: "CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD"
-            accessToken = "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD";
-            LoginResult result = FacebookService.Connect(accessToken);
+            LoginResult result = FacebookService.Connect("CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD");
 
             /// Use the FacebookService.Login method to display the login form to any user who wish to use this application.
             // You can then save the result.AccessToken for future auto-connect to this user:
@@ -136,11 +133,8 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                 }
             }
 
-            if (markersOverlay.Markers.Count > 0)
-            {
-                GMapMarker mostVisitedPlace = markersOverlay.Markers.GroupBy(i => i).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First();
-                richTextBoxCheckinDetails.Text = "Most Visited Place: " + mostVisitedPlace.ToolTipText;
-            }
+            Checkin mostVisitedPlace = m_LoggedInUser.Checkins.GroupBy(i => i).OrderByDescending(grp => grp.Count())
+            .Select(grp => grp.Key).First();
         }
 
         private void checkButtonMinusZoomEnabled()
@@ -182,7 +176,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
             // Do a google search on the place
             webBrowserGooglecheckin.Navigate(string.Format("https://www.google.co.il/search?q={0}", item.ToolTipText.Replace(" ", "+")));
-            
+
             // Details about the checkin
             Predicate<Checkin> checkinFinder = (Checkin c) => { return (c.Place.Location != null) && (c.Place.Location.Latitude == lat) && (c.Place.Location.Longitude == lng); };
             Checkin currCheckin = m_LoggedInUser.Checkins.Find(checkinFinder);
@@ -237,18 +231,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         {
             if (m_LoggedInUser != null)
             {
-                //Process.Start(String.Format("https://graph.facebook.com/search?type=place&center={0},{1}&distance=1&access_token={2}", currMaplat, currMapLng, accessToken));    
-                //m_LoggedInUser.PostStatus("", null, null, null);
-                
-                //m_LoggedInUser.PostStatus("", )
+                //m_LoggedInUser.PostStatus(
                 //m_LoggedInUser.Posts[m_LoggedInUser.Posts.Count - 1].Delete();
-
-                //MapRoute route = GMapProviders.GoogleMap.GetRoute(currMaplat.ToString(), 150.ToString(), false, false, 15);
-                //gmap.RoutesEnabled = true;
-                //GMapRoute g = new GMapRoute(route.Points, "my route");
-                //gmap.UpdateRouteLocalPosition(g);
-                Checkin c = m_LoggedInUser.Friends[0].Checkins[0];
-
+                    
                 showMarkersOnMap();
             }
         }

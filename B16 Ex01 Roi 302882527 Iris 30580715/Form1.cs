@@ -377,7 +377,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    pictureBoxFriendNo3.Visible = true;
                    pictureBoxFriendNo4.Visible = true;
 
-
                    pictureBoxFriendNo1.LoadAsync(getUserById(list.ElementAt(1).Key).PictureNormalURL);
                    pictureBoxFriendNo2.LoadAsync(m_LoggedInUser.PictureNormalURL);
                    pictureBoxFriendNo4.LoadAsync(m_LoggedInUser.PictureSmallURL);

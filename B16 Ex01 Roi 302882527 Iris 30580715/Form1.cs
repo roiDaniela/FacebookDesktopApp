@@ -22,6 +22,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         public Facebook()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Maximized;
             FacebookWrapper.FacebookService.s_CollectionLimit = 1000;
         }
 
@@ -139,7 +140,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             if (markersOverlay.Markers.Count > 0)
             {
                 GMapMarker mostVisitedPlace = markersOverlay.Markers.GroupBy(i => i).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First();
-                richTextBoxCheckinDetails.Text = "Most Visited Place: " + mostVisitedPlace.ToolTipText;
+                richTextBox1.Text = "Most Visited Place: " + mostVisitedPlace.ToolTipText;
             }
         }
 
@@ -233,63 +234,17 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             checkButtonPlusZoomEnabled();
         }
 
-        private void addChekinToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (m_LoggedInUser != null)
-            {
-                //Process.Start(String.Format("https://graph.facebook.com/search?type=place&center={0},{1}&distance=1&access_token={2}", currMaplat, currMapLng, accessToken));    
-                //m_LoggedInUser.PostStatus("", null, null, null);
-                
-                //m_LoggedInUser.PostStatus("", )
-                //m_LoggedInUser.Posts[m_LoggedInUser.Posts.Count - 1].Delete();
-
-                //MapRoute route = GMapProviders.GoogleMap.GetRoute(currMaplat.ToString(), 150.ToString(), false, false, 15);
-                //gmap.RoutesEnabled = true;
-                //GMapRoute g = new GMapRoute(route.Points, "my route");
-                //gmap.UpdateRouteLocalPosition(g);
-                Checkin c = m_LoggedInUser.Friends[0].Checkins[0];
-
-                showMarkersOnMap();
-            }
-        }
-
-        private void removeChekinToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //if (m_LoggedInUser != null)
-            //{
-            //    foreach (Checkin checkin in m_LoggedInUser.Checkins)
-            //    {
-            //        if(checkin.Place.Location.Latitude == lastMarker.Position.Lat &&
-            //           checkin.Place.Location.Longitude == lastMarker.Position.Lng)
-            //        {
-            //            m_LoggedInUser.Checkins.Remove(checkin);
-
-            //            gmap.Overlays.Clear();
-
-            //            break;
-            //        }
-            //    }
-            //}
-
-            showMarkersOnMap();
-        }
 
         private void gmap_OnMarkerLeave(GMapMarker item)
         {
             // set remove chekin as false
-            contextMenuStripAddChekin.Items[1].Enabled = false;
-
-            // Unsave last marker
-            lastMarker = null;
+            contextMenuStripMap.Items[0].Enabled = false; 
         }
 
         private void gmap_OnMarkerEnter(GMapMarker item)
         {
             // set remove chekin as true
-            contextMenuStripAddChekin.Items[1].Enabled = true;
-
-            // Save last marker
-            lastMarker = item;
+            contextMenuStripMap.Items[0].Enabled = true; 
         }
 
 
@@ -548,22 +503,12 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
          {
              if (m_LoggedInUser != null)
              {
-                 char[] delimiterChars = { '/' };
-                 string[] birthdate = m_LoggedInUser.Birthday.Split(delimiterChars);
-                 int year = Int32.Parse(birthdate[2]);
-                 int month = Int32.Parse(birthdate[1]);
-                 int day = Int32.Parse(birthdate[0]);
-                 //DateTime dt = new DateTime(year, month, day);
-                 //dateTimePickerFrom.Value = dt;
-                 dateTimePickerTo.Value = DateTime.Today;
+                 // Eearliest checkin date
+                 DateTime earliest = Convert.ToDateTime(m_LoggedInUser.Checkins.Min(record => record.CreatedTime));
+
+                 dateTimePickerFrom.Value = earliest;
                  showMarkersOnMap();
              }
-         }
-
-         private void contextMenuStripAddChekin_MouseClick(object sender, MouseEventArgs e)
-         {
-             currMaplat = gmap.FromLocalToLatLng(e.X, e.Y).Lat;
-             currMapLng = gmap.FromLocalToLatLng(e.X, e.Y).Lng;
          }
 
          private void dateTimePickerFrom_ValueChanged(object sender, EventArgs e)

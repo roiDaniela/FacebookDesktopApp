@@ -115,13 +115,25 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             tabControl1.Enabled = true;
         }
 
-        private void showMarkersOnMap()
+        private void showYourFacebookMarkersOnMap()
+        {
+            showMarkersOnMap(m_LoggedInUser, GMarkerGoogleType.red);
+
+            // Get most visited place
+            if (m_LoggedInUser.Checkins.Count > 0)
+            {
+                Checkin mostVisitedPlace = m_LoggedInUser.Checkins.GroupBy(i => i).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First();
+                richTextBox1.Text = "Most Visited Place: " + mostVisitedPlace.Place.Name;
+            }
+        }
+
+        private void showMarkersOnMap(User currUser, GMarkerGoogleType color)
         {
             GMapOverlay markersOverlay = new GMapOverlay("markers");
             double dLongitude;
             double dLatitude;
 
-            foreach (Checkin item in m_LoggedInUser.Checkins)
+            foreach (Checkin item in currUser.Checkins)
             {
                 if ((item.Place.Location != null) && 
                     (item.CreatedTime.Value < dateTimePickerTo.Value) &&
@@ -130,18 +142,17 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                     dLongitude = Convert.ToDouble(item.Place.Location.Longitude);
                     dLatitude = Convert.ToDouble(item.Place.Location.Latitude);
 
-                    GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(dLatitude, dLongitude), GMarkerGoogleType.red);
+                    GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(dLatitude, dLongitude), color);
                     marker.ToolTipText = item.Place.Name + " " + item.Place.Location.City;
                     gmap.Overlays.Add(markersOverlay);
                     markersOverlay.Markers.Add(marker);
                 }
             }
+        }
 
-            if (markersOverlay.Markers.Count > 0)
-            {
-                GMapMarker mostVisitedPlace = markersOverlay.Markers.GroupBy(i => i).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First();
-                richTextBox1.Text = "Most Visited Place: " + mostVisitedPlace.ToolTipText;
-            }
+        private void showFriendMarkersOnMap(User userFriend)
+        {
+            showMarkersOnMap(userFriend, GMarkerGoogleType.green);
         }
 
         private void checkButtonMinusZoomEnabled()
@@ -198,8 +209,8 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                 }
             }
 
-            richTextBoxCheckinDetails.Text = "Place: " + currCheckin.Name + "\n" +
-                                             "Time: " + currCheckin.UpdateTime.ToString() + "\n" +
+            richTextBoxCheckinDetails.Text = "Place: " + currCheckin.Place.Name + "\n" +
+                                             "Time Visited: " + currCheckin.UpdateTime.ToString() + "\n" +
                                              "Friends who was there also: " + names + "\n";
         }
 
@@ -507,24 +518,36 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                  DateTime earliest = Convert.ToDateTime(m_LoggedInUser.Checkins.Min(record => record.CreatedTime));
 
                  dateTimePickerFrom.Value = earliest;
-                 showMarkersOnMap();
+                 listBoxFriends.DataSource = m_LoggedInUser.Friends;
+                 listBoxFriends.ValueMember = "Id";
+                 listBoxFriends.DisplayMember = "Name";
+                 listBoxFriends.SelectedIndex = -1;
+                 showYourFacebookMarkersOnMap();
              }
          }
 
          private void dateTimePickerFrom_ValueChanged(object sender, EventArgs e)
          {
-             showMarkersOnMap();
+             showYourFacebookMarkersOnMap();
          }
 
          private void dateTimePickerTo_ValueChanged(object sender, EventArgs e)
          {
-             showMarkersOnMap();
+             showYourFacebookMarkersOnMap();
 
          }
 
          private void pictureBox4_Click(object sender, EventArgs e)
          {
 
+         }
+
+         private void buttonFriendCheckin_Click(object sender, EventArgs e)
+         {
+             if (listBoxFriends.SelectedIndex != -1)
+             {
+                 showFriendMarkersOnMap((User)listBoxFriends.Items[listBoxFriends.SelectedIndex]);
+             }
          }
     }
 }

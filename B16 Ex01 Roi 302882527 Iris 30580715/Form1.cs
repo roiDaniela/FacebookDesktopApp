@@ -136,9 +136,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
         private void showMarkersOnMap(User currUser, GMarkerGoogleType color)
         {
-            GMapOverlay markersOverlay = new GMapOverlay("markers");
             double dLongitude;
             double dLatitude;
+
+            GMapOverlay markersOverlay = new GMapOverlay("markers");
 
             foreach (Checkin item in currUser.Checkins)
             {
@@ -204,8 +205,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             
             // Details about the checkin
             Predicate<Checkin> checkinFinder = (Checkin c) => { return (c.Place.Location != null) && (c.Place.Location.Latitude == lat) && (c.Place.Location.Longitude == lng); };
-            Checkin currCheckin = m_LoggedInUser.Checkins.Find(checkinFinder);
+            Checkin currCheckin = m_LoggedInUser.Checkins.Find(checkinFinder) != null ? m_LoggedInUser.Checkins.Find(checkinFinder) : ((User)listBoxFriends.SelectedItem).Checkins.Find(checkinFinder);
             
+
             String names = "";
 
             foreach (User friend in m_LoggedInUser.Friends)
@@ -218,7 +220,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
             richTextBoxCheckinDetails.Text = "Place: " + currCheckin.Place.Name + "\n" +
                                              "Time Visited: " + currCheckin.UpdateTime.ToString() + "\n" +
-                                             "Friends who was there also: " + names + "\n";
+                                             "Friends of " + m_LoggedInUser.Name + " who were there also: " + names + "\n";
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
@@ -475,7 +477,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    foreach(User attendingUser in userEvent.AttendingUsers)
                    {
                        // if (m_LoggedInUser.Friends.Contains(attendingUser))
-                        if(myContainsUser(m_LoggedInUser.Friends, attendingUser))
+                       Predicate<User> userFinder = (User u) => { return (u.Id == attendingUser.Id); };
+                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
+                        //if(myContainsUser(m_LoggedInUser.Friends, attendingUser))
                         {
                              increaseFriendRating(io_topFriends, attendingUser.Id);                                                       
                         }
@@ -503,9 +507,11 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               foreach(Checkin userCheckin in m_LoggedInUser.Checkins)
               {
                    foreach(User taggedUser in userCheckin.WithUsers)
-                   {
-//                        if (m_LoggedInUser.Friends.Contains(taggedUser))
-                        if (myContainsUser(m_LoggedInUser.Friends, taggedUser))
+                   {                        
+                       Predicate<User> taggedUserFinder = (User u) => { return (u.Id == taggedUser.Id); };
+                       if(m_LoggedInUser.Friends.Find(taggedUserFinder) != null)
+                       // if (m_LoggedInUser.Friends.Contains(taggedUser))
+                        //if (myContainsUser(m_LoggedInUser.Friends, taggedUser))
                         {
                              increaseFriendRating(io_topFriends, taggedUser.Id);
                         }
@@ -519,8 +525,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                    foreach(User friend in m_LoggedInUser.Friends)
                    {
-//                        if (friend.LikedPages.Contains(page) == true)
-                        if (myContainsPage(friend.LikedPages, page))
+                       Predicate<Page> pageFinder = (Page p) => { return (p.Id == page.Id); };
+                       if (friend.LikedPages.Find(pageFinder) != null)
+                        //if (myContainsPage(friend.LikedPages, page))
+                        //if (friend.LikedPages.Contains(page) == true)
                         {
                              increaseFriendRating(io_topFriends, friend.Id);
                         }
@@ -535,7 +543,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    foreach(User userWhoLikedPhoto in photo.LikedBy)
                    {
   //                      if (m_LoggedInUser.Friends.Contains(userWhoLikedPhoto))
-                        if (myContainsUser(m_LoggedInUser.Friends, userWhoLikedPhoto))
+                       Predicate<User> userFinder = (User u) => { return (u.Id == userWhoLikedPhoto.Id); };
+                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
+                        // if (myContainsUser(m_LoggedInUser.Friends, userWhoLikedPhoto))
                         {
                              increaseFriendRating(io_topFriends, userWhoLikedPhoto.Id);
                         }
@@ -549,7 +559,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                    foreach(User userWhoLikedPost in post.LikedBy)
                    {
-                        if (myContainsUser(m_LoggedInUser.Friends, userWhoLikedPost))
+                      //if (myContainsUser(m_LoggedInUser.Friends, userWhoLikedPost))
+                      Predicate<User> userFinder = (User u) => { return (u.Id == userWhoLikedPost.Id); };
+                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
  //                       if (m_LoggedInUser.Friends.Contains(userWhoLikedPost))
                         {
                              increaseFriendRating(io_topFriends, userWhoLikedPost.Id);
@@ -565,8 +577,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                   foreach(Comment comment in photo.Comments)
                    {
-                       if (myContainsUser(m_LoggedInUser.Friends, comment.From))
+                       //if (myContainsUser(m_LoggedInUser.Friends, comment.From))
                        //   if (m_LoggedInUser.Friends.Contains(comment.From))
+                       Predicate<User> userFinder = (User u) => { return (u.Id == comment.From.Id); };
+                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
                         {
                              User userWhoCommentedOnPhoto = comment.From; // for readability
                              increaseFriendRating(io_topFriends, userWhoCommentedOnPhoto.Id);
@@ -577,12 +591,14 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
          private void updateTopFriendsAccordingToCommentsOnPosts(Dictionary<string, int> io_topFriends)
          {
-              foreach(Post post in m_LoggedInUser.Posts)
+             foreach(Post post in m_LoggedInUser.Posts)
               {
                    foreach(Comment comment in post.Comments)
                    {
-                        if (myContainsUser(m_LoggedInUser.Friends, comment.From))
-  //                      if(m_LoggedInUser.Friends.Contains(comment.From)
+                       Predicate<User> commentedUserFinder = (User u) => { return (u.Id == comment.From.Id); };
+                       if(m_LoggedInUser.Friends.Find(commentedUserFinder) != null)  
+                       // if (myContainsUser(m_LoggedInUser.Friends, comment.From))
+                       // if(m_LoggedInUser.Friends.Contains(comment.From)
                         {
                              User userWhoCommentedOnPost = comment.From;  // for readability
                              increaseFriendRating(io_topFriends, userWhoCommentedOnPost.Id);
@@ -613,13 +629,24 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
          private void dateTimePickerFrom_ValueChanged(object sender, EventArgs e)
          {
+             gmap.Overlays.Clear();
              showYourFacebookMarkersOnMap();
+
+             if (listBoxFriends.SelectedItem != null)
+             {
+                 showFriendMarkersOnMap((User)listBoxFriends.SelectedItem);
+             }  
          }
 
          private void dateTimePickerTo_ValueChanged(object sender, EventArgs e)
          {
+             gmap.Overlays.Clear();
              showYourFacebookMarkersOnMap();
 
+             if (listBoxFriends.SelectedItem != null)
+             {
+                 showFriendMarkersOnMap((User)listBoxFriends.SelectedItem);
+             }  
          }
 
          private void pictureBox4_Click(object sender, EventArgs e)
@@ -629,10 +656,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
          private void buttonFriendCheckin_Click(object sender, EventArgs e)
          {
-             if (listBoxFriends.SelectedIndex != -1)
+             if (listBoxFriends.SelectedItem != null)
              {
-                 showFriendMarkersOnMap((User)listBoxFriends.Items[listBoxFriends.SelectedIndex]);
-             }
+                 showFriendMarkersOnMap((User)listBoxFriends.SelectedItem);
+             }  
          }
 
          private void checkBoxCheckAll_CheckedChanged(object sender, EventArgs e)

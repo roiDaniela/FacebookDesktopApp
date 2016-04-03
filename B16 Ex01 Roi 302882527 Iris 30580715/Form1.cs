@@ -35,15 +35,12 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         double currMaplat;
         double currMapLng;
 
-        private const int k_SharedPhotosCheckedListIndex = 0;
-        private const int k_SharedEventsCheckedListIndex = 1;
-        private const int k_SharedCheckinsCheckedListIndex = 2;
-        private const int k_SharedLikedPagesCheckedListIndex = 3;
-        private const int k_LikedMyPhotosCheckedListIndex = 4;
-        private const int k_CommentedOnPhotosCheckedListIndex = 5;
-        private const int k_LikedMyPostsCheckedListIndex = 6;
-        private const int k_CommentedOnPostsCheckedListIndex = 7;
-        private const int k_NumOfParametersOptionsToRate = 8;
+        private const int k_SharedEventsCheckedListIndex = 0;
+        private const int k_SharedCheckinsCheckedListIndex = 1;
+        private const int k_SharedLikedPagesCheckedListIndex = 2;
+        private const int k_LikedMyPhotosCheckedListIndex = 3;
+        private const int k_CommentedOnPhotosCheckedListIndex = 4;
+        private const int k_NumOfParametersOptionsToRate = 5;
         private const string k_FriendNotFoundUrl = "http://blog.symbyoz.com/wp-content/uploads/2012/04/friend_not_found.jpg";
 
 
@@ -289,32 +286,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         //        }
         //    }
         //}
-
-        
-         private bool myContainsUser(FacebookObjectCollection<User> users, User user)
-        {
-              foreach(User u1 in users)
-              {
-                   if(u1.Id == user.Id)
-                   {
-                        return true;
-                   }
-              }
-              return false;
-        }
-
-         private bool myContainsPage(FacebookObjectCollection<Page> pages, Page page)
-         {
-              foreach (Page p1 in pages)
-              {
-                   if (p1.Id == page.Id)
-                   {
-                        return true;
-                   }
-              }
-              return false;
-         }       
-
+              
          private void rateFriends()
         {
              Dictionary<string, int> topFriends = new Dictionary<string, int>();
@@ -333,11 +305,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                   else
                   {
                        textBoxNoRateParametersSelected.Visible = false;
-
-                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedPhotosCheckedListIndex) == true)
-                       {
-                            updateTopFriendsAccordingToSharedPhotos(topFriends);
-                       }
                        if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedEventsCheckedListIndex) == true)
                        {
                             updateTopFriendsAccordingToSharedEvents(topFriends);   
@@ -358,25 +325,15 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                        {
                             updateTopFriendsAccordingToCommentsOnPhotos(topFriends);
                        }
-                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_LikedMyPostsCheckedListIndex) == true)
-                       {
-                        //    updateTopFriendsAccordingToLikesOnPosts(topFriends);
-                       }
-                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_CommentedOnPostsCheckedListIndex) == true)
-                       {
-                        //    updateTopFriendsAccordingToCommentsOnPosts(topFriends);
-                       }
 
                        var result = topFriends.OrderByDescending(pair => pair.Value);
                        List<KeyValuePair<string, int>> topFriendsList = result.ToList();
                        showTopFriends(topFriendsList);
+               }                   
              }
-                   
-              }
         }
 
-
-
+         
          private void hideTopFriends()
          {
               textBoxFriendNo1.Visible = false;
@@ -487,20 +444,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               }
          }
         
-         private void updateTopFriendsAccordingToSharedPhotos(Dictionary<string, int> io_topFriends)
-         {
-        //      foreach(PhotoTag tag in m_LoggedInUser.PhotosTaggedIn)
-        //     {
-        //          foreach(User taggedUser in userPhoto.LikedBy)
-        //          {                                
-        //                  if (m_LoggedInUser.Friends.Contains(taggedUser))
-        //               {
-        //                    increaseFriendRating(io_topFriends, taggedUser.Id);
-        //               }
-        //          }
-        //     }
-        }
- 
+
 
          private void updateTopFriendsAccordingToSharedCheckins(Dictionary<string, int> io_topFriends)
          {
@@ -527,8 +471,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    {
                        Predicate<Page> pageFinder = (Page p) => { return (p.Id == page.Id); };
                        if (friend.LikedPages.Find(pageFinder) != null)
-                        //if (myContainsPage(friend.LikedPages, page))
-                        //if (friend.LikedPages.Contains(page) == true)
                         {
                              increaseFriendRating(io_topFriends, friend.Id);
                         }
@@ -542,32 +484,12 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                    foreach(User userWhoLikedPhoto in photo.LikedBy)
                    {
-  //                      if (m_LoggedInUser.Friends.Contains(userWhoLikedPhoto))
                        Predicate<User> userFinder = (User u) => { return (u.Id == userWhoLikedPhoto.Id); };
                        if (m_LoggedInUser.Friends.Find(userFinder) != null)
-                        // if (myContainsUser(m_LoggedInUser.Friends, userWhoLikedPhoto))
                         {
                              increaseFriendRating(io_topFriends, userWhoLikedPhoto.Id);
                         }
                    }
-              }
-         }
-
-         private void updateTopFriendsAccordingToLikesOnPosts(Dictionary<string, int> io_topFriends)
-         {
-              foreach(Post post in m_LoggedInUser.Posts)
-              {
-                   foreach(User userWhoLikedPost in post.LikedBy)
-                   {
-                      //if (myContainsUser(m_LoggedInUser.Friends, userWhoLikedPost))
-                      Predicate<User> userFinder = (User u) => { return (u.Id == userWhoLikedPost.Id); };
-                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
- //                       if (m_LoggedInUser.Friends.Contains(userWhoLikedPost))
-                        {
-                             increaseFriendRating(io_topFriends, userWhoLikedPost.Id);
-                        }
-                   }
-
               }
          }
 
@@ -577,8 +499,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                   foreach(Comment comment in photo.Comments)
                    {
-                       //if (myContainsUser(m_LoggedInUser.Friends, comment.From))
-                       //   if (m_LoggedInUser.Friends.Contains(comment.From))
                        Predicate<User> userFinder = (User u) => { return (u.Id == comment.From.Id); };
                        if (m_LoggedInUser.Friends.Find(userFinder) != null)
                         {
@@ -588,28 +508,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    }
               }
          }
-
-         private void updateTopFriendsAccordingToCommentsOnPosts(Dictionary<string, int> io_topFriends)
-         {
-             foreach(Post post in m_LoggedInUser.Posts)
-              {
-                   foreach(Comment comment in post.Comments)
-                   {
-                       Predicate<User> commentedUserFinder = (User u) => { return (u.Id == comment.From.Id); };
-                       if(m_LoggedInUser.Friends.Find(commentedUserFinder) != null)  
-                       // if (myContainsUser(m_LoggedInUser.Friends, comment.From))
-                       // if(m_LoggedInUser.Friends.Contains(comment.From)
-                        {
-                             User userWhoCommentedOnPost = comment.From;  // for readability
-                             increaseFriendRating(io_topFriends, userWhoCommentedOnPost.Id);
-                        }
-                   }
-              }
-         }
-
-
-
-
 
          private void tabControl1_Selected(object sender, TabControlEventArgs e)
          {

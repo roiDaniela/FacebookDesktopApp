@@ -17,6 +17,9 @@ using System.Diagnostics;
 
 namespace B16_Ex01_Roi_302882527_Iris_30580715
 {
+
+
+
     public partial class Facebook : Form
     {
         public Facebook()
@@ -40,12 +43,15 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         private const int k_CommentedOnPhotosCheckedListIndex = 5;
         private const int k_LikedMyPostsCheckedListIndex = 6;
         private const int k_CommentedOnPostsCheckedListIndex = 7;
+        private const int k_NumOfParametersOptionsToRate = 8;
+        private const string k_FriendNotFoundUrl = "http://blog.symbyoz.com/wp-content/uploads/2012/04/friend_not_found.jpg";
+
 
         private void loginAndInit()
         {
             // Acess Token Roi: "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD"
             // Acess Token Iris: "CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD"
-            accessToken = "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD";
+             accessToken = "CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD";
             LoginResult result = FacebookService.Connect(accessToken);
 
             /// Use the FacebookService.Login method to display the login form to any user who wish to use this application.
@@ -102,6 +108,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             {
                 m_LoggedInUser = result.LoggedInUser;
                 fetchUserInfo();
+                textBoxPleaseLogin.Visible = false;
             }
             else
             {
@@ -111,7 +118,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
         private void fetchUserInfo()
         {
-            picture_smallPictureBox.LoadAsync(m_LoggedInUser.PictureNormalURL);
+            picture_smallPictureBox.LoadAsync(m_LoggedInUser.PictureLargeURL);
             tabControl1.Enabled = true;
         }
 
@@ -129,9 +136,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
         private void showMarkersOnMap(User currUser, GMarkerGoogleType color)
         {
-            GMapOverlay markersOverlay = new GMapOverlay("markers");
             double dLongitude;
             double dLatitude;
+
+            GMapOverlay markersOverlay = new GMapOverlay("markers");
 
             foreach (Checkin item in currUser.Checkins)
             {
@@ -197,8 +205,9 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             
             // Details about the checkin
             Predicate<Checkin> checkinFinder = (Checkin c) => { return (c.Place.Location != null) && (c.Place.Location.Latitude == lat) && (c.Place.Location.Longitude == lng); };
-            Checkin currCheckin = m_LoggedInUser.Checkins.Find(checkinFinder);
+            Checkin currCheckin = m_LoggedInUser.Checkins.Find(checkinFinder) != null ? m_LoggedInUser.Checkins.Find(checkinFinder) : ((User)listBoxFriends.SelectedItem).Checkins.Find(checkinFinder);
             
+
             String names = "";
 
             foreach (User friend in m_LoggedInUser.Friends)
@@ -211,7 +220,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
             richTextBoxCheckinDetails.Text = "Place: " + currCheckin.Place.Name + "\n" +
                                              "Time Visited: " + currCheckin.UpdateTime.ToString() + "\n" +
-                                             "Friends who was there also: " + names + "\n";
+                                             "Friends of " + m_LoggedInUser.Name + " who were there also: " + names + "\n";
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
@@ -281,81 +290,159 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         //    }
         //}
 
-        private void rateFriends()
+        
+         private bool myContainsUser(FacebookObjectCollection<User> users, User user)
         {
-     //        pictureBoxFriendNo1.Visible = false;
-      //       pictureBoxFriendNo2.Visible = false;
-      //       pictureBoxFriendNo3.Visible = false;
-      //       pictureBoxFriendNo4.Visible = false;
-
-             Dictionary<string, int> topFriends = new Dictionary<string, int>();
-             Console.WriteLine(m_LoggedInUser.Friends.ToString());
-             int i = m_LoggedInUser.Friends.Count;
-
-              
-              if(checkedListBoxParametersToRateFriends.CheckedItems.Count == 0)
+              foreach(User u1 in users)
               {
-                   textBoxNoRateParametersSelected.Visible = true;
+                   if(u1.Id == user.Id)
+                   {
+                        return true;
+                   }
               }
-              else
+              return false;
+        }
+
+         private bool myContainsPage(FacebookObjectCollection<Page> pages, Page page)
+         {
+              foreach (Page p1 in pages)
               {
-                   textBoxNoRateParametersSelected.Visible = false;
-
-                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedPhotosCheckedListIndex) == true)
+                   if (p1.Id == page.Id)
                    {
-                        updateTopFriendsAccordingToSharedPhotos(topFriends);
+                        return true;
                    }
-                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedEventsCheckedListIndex) == true)
-                   {
-//                        updateTopFriendsAccordingToSharedEvents(topFriends);   
-                   }
-                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedCheckinsCheckedListIndex) == true)
-                   {
-                        updateTopFriendsAccordingToSharedCheckins(topFriends);
-                   }
-                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedLikedPagesCheckedListIndex) == true)
-                   {
-                        updateTopFriendsAccordingToSharedPages(topFriends);
-                   }
-                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_LikedMyPhotosCheckedListIndex) == true)
-                   {
-                        updateTopFriendsAccordingToLikesOnPhotos(topFriends);
-                   }
-                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_CommentedOnPhotosCheckedListIndex) == true)
-                   {
-                        updateTopFriendsAccordingToCommentsOnPhotos(topFriends);
-                   }
-                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_LikedMyPostsCheckedListIndex) == true)
-                   {
-                        updateTopFriendsAccordingToLikesOnPosts(topFriends);
-                   }
-                   if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_CommentedOnPostsCheckedListIndex) == true)
-                   {
-                        updateTopFriendsAccordingToCommentsOnPosts(topFriends);
-                   }
+              }
+              return false;
+         }       
 
-                   var result = topFriends.OrderByDescending(pair => pair.Value);
-                   List<KeyValuePair<string, int>> list = result.ToList();
+         private void rateFriends()
+        {
+             Dictionary<string, int> topFriends = new Dictionary<string, int>();
 
+             hideTopFriends();              
+             if(m_LoggedInUser == null)
+             {
+                  textBoxPleaseLogin.Visible = true;
+             }
+             else 
+             {
+                  if (checkedListBoxParametersToRateFriends.CheckedItems.Count == 0)
+                  {
+                       textBoxNoRateParametersSelected.Visible = true;
+                  }
+                  else
+                  {
+                       textBoxNoRateParametersSelected.Visible = false;
 
-                   pictureBoxFriendNo1.Visible = true;
-                   pictureBoxFriendNo2.Visible = true;
-                   pictureBoxFriendNo3.Visible = true;
-                   pictureBoxFriendNo4.Visible = true;
+                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedPhotosCheckedListIndex) == true)
+                       {
+                            updateTopFriendsAccordingToSharedPhotos(topFriends);
+                       }
+                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedEventsCheckedListIndex) == true)
+                       {
+                            updateTopFriendsAccordingToSharedEvents(topFriends);   
+                       }
+                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedCheckinsCheckedListIndex) == true)
+                       {
+                            updateTopFriendsAccordingToSharedCheckins(topFriends);
+                       }
+                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_SharedLikedPagesCheckedListIndex) == true)
+                       {
+                            updateTopFriendsAccordingToSharedPages(topFriends);
+                       }
+                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_LikedMyPhotosCheckedListIndex) == true)
+                       {
+                            updateTopFriendsAccordingToLikesOnPhotos(topFriends);
+                       }
+                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_CommentedOnPhotosCheckedListIndex) == true)
+                       {
+                            updateTopFriendsAccordingToCommentsOnPhotos(topFriends);
+                       }
+                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_LikedMyPostsCheckedListIndex) == true)
+                       {
+                        //    updateTopFriendsAccordingToLikesOnPosts(topFriends);
+                       }
+                       if (checkedListBoxParametersToRateFriends.CheckedIndices.Contains(k_CommentedOnPostsCheckedListIndex) == true)
+                       {
+                        //    updateTopFriendsAccordingToCommentsOnPosts(topFriends);
+                       }
 
-                   pictureBoxFriendNo1.LoadAsync(getUserById(list.ElementAt(1).Key).PictureNormalURL);
-                   pictureBoxFriendNo2.LoadAsync(m_LoggedInUser.PictureNormalURL);
-                   pictureBoxFriendNo4.LoadAsync(m_LoggedInUser.PictureSmallURL);
-
-
-                   
-                   
-
-
+                       var result = topFriends.OrderByDescending(pair => pair.Value);
+                       List<KeyValuePair<string, int>> topFriendsList = result.ToList();
+                       showTopFriends(topFriendsList);
+             }
                    
               }
         }
 
+
+
+         private void hideTopFriends()
+         {
+              textBoxFriendNo1.Visible = false;
+              textBoxFriendNo2.Visible = false;
+              textBoxFriendNo3.Visible = false;
+              textBoxFriendNo4.Visible = false;
+              pictureBoxFriendNo1.Visible = false;
+              pictureBoxFriendNo2.Visible = false;
+              pictureBoxFriendNo3.Visible = false;
+              pictureBoxFriendNo4.Visible = false;
+         }
+
+
+        private void showTopFriends(List<KeyValuePair<string, int>> list)
+        {        
+               switch(list.Count)
+               {
+                    case 0:
+                         pictureBoxFriendNo1.LoadAsync(k_FriendNotFoundUrl);
+                         pictureBoxFriendNo2.LoadAsync(k_FriendNotFoundUrl);
+                         pictureBoxFriendNo3.LoadAsync(k_FriendNotFoundUrl);
+                         pictureBoxFriendNo4.LoadAsync(k_FriendNotFoundUrl);
+                         break;
+                    case 1:
+                         pictureBoxFriendNo1.LoadAsync(getUserById(list.ElementAt(0).Key).PictureLargeURL);
+                         pictureBoxFriendNo2.LoadAsync(k_FriendNotFoundUrl);
+                         pictureBoxFriendNo3.LoadAsync(k_FriendNotFoundUrl);
+                         pictureBoxFriendNo4.LoadAsync(k_FriendNotFoundUrl);
+                         textBoxFriendNo1.Visible = true;
+
+                         break;
+                    case 2:
+                         pictureBoxFriendNo1.LoadAsync(getUserById(list.ElementAt(0).Key).PictureLargeURL);
+                         pictureBoxFriendNo2.LoadAsync(getUserById(list.ElementAt(1).Key).PictureLargeURL);     
+                         pictureBoxFriendNo3.LoadAsync(k_FriendNotFoundUrl);
+                         pictureBoxFriendNo4.LoadAsync(k_FriendNotFoundUrl);
+                         textBoxFriendNo1.Visible = true;
+                         textBoxFriendNo2.Visible = true;
+                         break;
+                    case 3:
+                         pictureBoxFriendNo1.LoadAsync(getUserById(list.ElementAt(0).Key).PictureLargeURL);
+                         pictureBoxFriendNo2.LoadAsync(getUserById(list.ElementAt(1).Key).PictureLargeURL);  
+                         pictureBoxFriendNo3.LoadAsync(getUserById(list.ElementAt(2).Key).PictureLargeURL);
+                         pictureBoxFriendNo4.LoadAsync(k_FriendNotFoundUrl);
+                         textBoxFriendNo1.Visible = true;
+                         textBoxFriendNo2.Visible = true;
+                         textBoxFriendNo3.Visible = true;
+                         break;
+                    default:
+                         pictureBoxFriendNo1.LoadAsync(getUserById(list.ElementAt(0).Key).PictureLargeURL);
+                         pictureBoxFriendNo2.LoadAsync(getUserById(list.ElementAt(1).Key).PictureLargeURL);  
+                         pictureBoxFriendNo3.LoadAsync(getUserById(list.ElementAt(2).Key).PictureLargeURL);
+                         pictureBoxFriendNo4.LoadAsync(getUserById(list.ElementAt(3).Key).PictureLargeURL);
+                         textBoxFriendNo1.Visible = true;
+                         textBoxFriendNo2.Visible = true;
+                         textBoxFriendNo3.Visible = true;
+                         textBoxFriendNo4.Visible = true;
+                         break;
+               }
+
+               pictureBoxFriendNo1.Visible = true;
+               pictureBoxFriendNo2.Visible = true;
+               pictureBoxFriendNo3.Visible = true;
+               pictureBoxFriendNo4.Visible = true;
+        }
+         
         private User getUserById(string i_id)
         {
              User user = null;
@@ -367,7 +454,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                        break;
                   }
              }
-
              return user;
         }
 
@@ -376,7 +462,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         {
              if (io_topFriends.ContainsKey(i_friendId) == true)
              {
-                  io_topFriends[i_friendId] = io_topFriends[i_friendId]++;
+                  io_topFriends[i_friendId] += 1;
              }
              else
              {
@@ -390,44 +476,42 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                    foreach(User attendingUser in userEvent.AttendingUsers)
                    {
-                        if (m_LoggedInUser.Friends.Contains(attendingUser))
+                       // if (m_LoggedInUser.Friends.Contains(attendingUser))
+                       Predicate<User> userFinder = (User u) => { return (u.Id == attendingUser.Id); };
+                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
+                        //if(myContainsUser(m_LoggedInUser.Friends, attendingUser))
                         {
                              increaseFriendRating(io_topFriends, attendingUser.Id);                                                       
                         }
                    }
               }
          }
-
-         
+        
          private void updateTopFriendsAccordingToSharedPhotos(Dictionary<string, int> io_topFriends)
          {
-             // foreach(Photo userPhoto in m_LoggedInUser.PhotosTaggedIn)
-             //{
-             //     foreach(User taggedUser in userPhoto.Tags.)
-             //     {
-              //                                      
-              //            if (m_LoggedInUser.Friends.Contains(taggedUser))
-             //          {
-              //              increaseFriendRating(io_topFriends, taggedUser.Id);
-             //          }
-             //     }
-             //}
+        //      foreach(PhotoTag tag in m_LoggedInUser.PhotosTaggedIn)
+        //     {
+        //          foreach(User taggedUser in userPhoto.LikedBy)
+        //          {                                
+        //                  if (m_LoggedInUser.Friends.Contains(taggedUser))
+        //               {
+        //                    increaseFriendRating(io_topFriends, taggedUser.Id);
+        //               }
+        //          }
+        //     }
         }
  
-
-         private void textBoxNoRateParametersSelected_TextChanged(object sender, EventArgs e)
-         {
-
-         }
-
 
          private void updateTopFriendsAccordingToSharedCheckins(Dictionary<string, int> io_topFriends)
          {
               foreach(Checkin userCheckin in m_LoggedInUser.Checkins)
               {
-                   foreach(User taggedUser in userCheckin.TaggedUsers)
-                   {
-                        if (m_LoggedInUser.Friends.Contains(taggedUser))
+                   foreach(User taggedUser in userCheckin.WithUsers)
+                   {                        
+                       Predicate<User> taggedUserFinder = (User u) => { return (u.Id == taggedUser.Id); };
+                       if(m_LoggedInUser.Friends.Find(taggedUserFinder) != null)
+                       // if (m_LoggedInUser.Friends.Contains(taggedUser))
+                        //if (myContainsUser(m_LoggedInUser.Friends, taggedUser))
                         {
                              increaseFriendRating(io_topFriends, taggedUser.Id);
                         }
@@ -441,7 +525,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                    foreach(User friend in m_LoggedInUser.Friends)
                    {
-                        if (friend.LikedPages.Contains(page) == true)
+                       Predicate<Page> pageFinder = (Page p) => { return (p.Id == page.Id); };
+                       if (friend.LikedPages.Find(pageFinder) != null)
+                        //if (myContainsPage(friend.LikedPages, page))
+                        //if (friend.LikedPages.Contains(page) == true)
                         {
                              increaseFriendRating(io_topFriends, friend.Id);
                         }
@@ -455,7 +542,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                    foreach(User userWhoLikedPhoto in photo.LikedBy)
                    {
-                        if (m_LoggedInUser.Friends.Contains(userWhoLikedPhoto))
+  //                      if (m_LoggedInUser.Friends.Contains(userWhoLikedPhoto))
+                       Predicate<User> userFinder = (User u) => { return (u.Id == userWhoLikedPhoto.Id); };
+                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
+                        // if (myContainsUser(m_LoggedInUser.Friends, userWhoLikedPhoto))
                         {
                              increaseFriendRating(io_topFriends, userWhoLikedPhoto.Id);
                         }
@@ -469,7 +559,10 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
               {
                    foreach(User userWhoLikedPost in post.LikedBy)
                    {
-                        if (m_LoggedInUser.Friends.Contains(userWhoLikedPost))
+                      //if (myContainsUser(m_LoggedInUser.Friends, userWhoLikedPost))
+                      Predicate<User> userFinder = (User u) => { return (u.Id == userWhoLikedPost.Id); };
+                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
+ //                       if (m_LoggedInUser.Friends.Contains(userWhoLikedPost))
                         {
                              increaseFriendRating(io_topFriends, userWhoLikedPost.Id);
                         }
@@ -480,30 +573,38 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
          private void updateTopFriendsAccordingToCommentsOnPhotos(Dictionary<string, int> io_topFriends)
          {
- //             foreach(Photo photo in m_LoggedInUser.PhotosTaggedIn)
- //             {
- //                 foreach(User userWhoCommentedOnPhoto in photo.Comments.)
- //                  {
- //                       if (m_LoggedInUser.Friends.Contains(userWhoCommentedOnPhoto))
- //                       {
-              //                          increaseFriendRating(io_topFriends, userWhoCommentedOnPhoto.Id);
- //                       }
- //                  }
- //             }
+              foreach(Photo photo in m_LoggedInUser.PhotosTaggedIn)
+              {
+                  foreach(Comment comment in photo.Comments)
+                   {
+                       //if (myContainsUser(m_LoggedInUser.Friends, comment.From))
+                       //   if (m_LoggedInUser.Friends.Contains(comment.From))
+                       Predicate<User> userFinder = (User u) => { return (u.Id == comment.From.Id); };
+                       if (m_LoggedInUser.Friends.Find(userFinder) != null)
+                        {
+                             User userWhoCommentedOnPhoto = comment.From; // for readability
+                             increaseFriendRating(io_topFriends, userWhoCommentedOnPhoto.Id);
+                        }
+                   }
+              }
          }
 
          private void updateTopFriendsAccordingToCommentsOnPosts(Dictionary<string, int> io_topFriends)
          {
- //             foreach(Post post in m_LoggedInUser.Posts)
- //             {
- //                  foreach(User userWhoCommentedOnPost in post.Comments)
- //                  {
- //                       if(m_LoggedInUser.Friends.Contains(userWhoCommentedOnPost)
- //                       {
-              //                                      increaseFriendRating(io_topFriends, userWhoCommentedOnPost.Id);
- //                       }
-  //                 }
- //             }
+             foreach(Post post in m_LoggedInUser.Posts)
+              {
+                   foreach(Comment comment in post.Comments)
+                   {
+                       Predicate<User> commentedUserFinder = (User u) => { return (u.Id == comment.From.Id); };
+                       if(m_LoggedInUser.Friends.Find(commentedUserFinder) != null)  
+                       // if (myContainsUser(m_LoggedInUser.Friends, comment.From))
+                       // if(m_LoggedInUser.Friends.Contains(comment.From)
+                        {
+                             User userWhoCommentedOnPost = comment.From;  // for readability
+                             increaseFriendRating(io_topFriends, userWhoCommentedOnPost.Id);
+                        }
+                   }
+              }
          }
 
 
@@ -528,13 +629,24 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
          private void dateTimePickerFrom_ValueChanged(object sender, EventArgs e)
          {
+             gmap.Overlays.Clear();
              showYourFacebookMarkersOnMap();
+
+             if (listBoxFriends.SelectedItem != null)
+             {
+                 showFriendMarkersOnMap((User)listBoxFriends.SelectedItem);
+             }  
          }
 
          private void dateTimePickerTo_ValueChanged(object sender, EventArgs e)
          {
+             gmap.Overlays.Clear();
              showYourFacebookMarkersOnMap();
 
+             if (listBoxFriends.SelectedItem != null)
+             {
+                 showFriendMarkersOnMap((User)listBoxFriends.SelectedItem);
+             }  
          }
 
          private void pictureBox4_Click(object sender, EventArgs e)
@@ -544,10 +656,40 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
          private void buttonFriendCheckin_Click(object sender, EventArgs e)
          {
-             if (listBoxFriends.SelectedIndex != -1)
+             if (listBoxFriends.SelectedItem != null)
              {
-                 showFriendMarkersOnMap((User)listBoxFriends.Items[listBoxFriends.SelectedIndex]);
-             }
+                 showFriendMarkersOnMap((User)listBoxFriends.SelectedItem);
+             }  
+         }
+
+         private void checkBoxCheckAll_CheckedChanged(object sender, EventArgs e)
+         {
+              if (checkBoxCheckAll.Text.Equals("Check All"))
+              {
+                   for (int i = 0; i < checkedListBoxParametersToRateFriends.Items.Count; i++)
+                   {
+                        checkedListBoxParametersToRateFriends.SetItemChecked(i, true);
+                   }
+                   checkBoxCheckAll.Text = "Un-Check All";
+              }
+              else
+              {
+                   for (int i = 0; i < checkedListBoxParametersToRateFriends.Items.Count; i++)
+                   {
+                        checkedListBoxParametersToRateFriends.SetItemChecked(i, false);
+                   }
+                   checkBoxCheckAll.Text = "Check All";
+              }
+         }
+
+         private void Facebook_Load(object sender, EventArgs e)
+         {
+
+         }
+
+         private void textBox1_TextChanged_1(object sender, EventArgs e)
+         {
+
          }
     }
 }

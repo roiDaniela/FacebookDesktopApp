@@ -13,6 +13,7 @@ using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
 using GMap.NET;
 using GMap.NET.MapProviders;
+using System.Diagnostics;
 
 namespace B16_Ex01_Roi_302882527_Iris_30580715
 {
@@ -21,11 +22,13 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         public Facebook()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Maximized;
             FacebookWrapper.FacebookService.s_CollectionLimit = 1000;
         }
 
         User m_LoggedInUser;
         GMapMarker lastMarker;
+        String accessToken;
         double currMaplat;
         double currMapLng;
 
@@ -42,7 +45,8 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
         {
             // Acess Token Roi: "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD"
             // Acess Token Iris: "CAAWkQ6soPp0BADC8XS19wOmrlTqzgRHtrFWYyWDRv5GAmtW9jtclEZB5Tvp1FVJe7a37WrD44PnExe2rZAqPRQtwb4c8SYyMgjh4WZBlOEfN5p1DkabKFtl0oZASvmlvZCYJbjgTGoQvP9GHj64QIb6EdOgpk9ZAkRgBTy3vyASjuFgkQRnllMVaZAYZAkU1ip0OlJVaWTcbzwZDZD"
-            LoginResult result = FacebookService.Connect("CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD");
+            accessToken = "CAAWkQ6soPp0BAPQ1QsZBV3UguaR1WTrT2mSXqvDRGhKJGIBuZBcsNbZCapkQCQxpQVZBZArdDvTNuA8ZCIb4Vbj8PcUhiaQym4weRsUyuwOwfgiuSTYYPpFl9ygBNxuhESppLv8MLM3xgzDcRMAXOnVufuIBespvuB1rIb2Vdkhp6kqeiawaTG6yVtkZCtQDy1KkFlALAn53AZDZD";
+            LoginResult result = FacebookService.Connect(accessToken);
 
             /// Use the FacebookService.Login method to display the login form to any user who wish to use this application.
             // You can then save the result.AccessToken for future auto-connect to this user:
@@ -111,13 +115,25 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             tabControl1.Enabled = true;
         }
 
-        private void showMarkersOnMap()
+        private void showYourFacebookMarkersOnMap()
+        {
+            showMarkersOnMap(m_LoggedInUser, GMarkerGoogleType.red);
+
+            // Get most visited place
+            if (m_LoggedInUser.Checkins.Count > 0)
+            {
+                Checkin mostVisitedPlace = m_LoggedInUser.Checkins.GroupBy(i => i).OrderByDescending(grp => grp.Count()).Select(grp => grp.Key).First();
+                richTextBox1.Text = "Most Visited Place: " + mostVisitedPlace.Place.Name;
+            }
+        }
+
+        private void showMarkersOnMap(User currUser, GMarkerGoogleType color)
         {
             GMapOverlay markersOverlay = new GMapOverlay("markers");
             double dLongitude;
             double dLatitude;
 
-            foreach (Checkin item in m_LoggedInUser.Checkins)
+            foreach (Checkin item in currUser.Checkins)
             {
                 if ((item.Place.Location != null) && 
                     (item.CreatedTime.Value < dateTimePickerTo.Value) &&
@@ -126,15 +142,17 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                     dLongitude = Convert.ToDouble(item.Place.Location.Longitude);
                     dLatitude = Convert.ToDouble(item.Place.Location.Latitude);
 
-                    GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(dLatitude, dLongitude), GMarkerGoogleType.red);
+                    GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(dLatitude, dLongitude), color);
                     marker.ToolTipText = item.Place.Name + " " + item.Place.Location.City;
                     gmap.Overlays.Add(markersOverlay);
                     markersOverlay.Markers.Add(marker);
                 }
             }
+        }
 
-            Checkin mostVisitedPlace = m_LoggedInUser.Checkins.GroupBy(i => i).OrderByDescending(grp => grp.Count())
-            .Select(grp => grp.Key).First();
+        private void showFriendMarkersOnMap(User userFriend)
+        {
+            showMarkersOnMap(userFriend, GMarkerGoogleType.green);
         }
 
         private void checkButtonMinusZoomEnabled()
@@ -176,7 +194,7 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
 
             // Do a google search on the place
             webBrowserGooglecheckin.Navigate(string.Format("https://www.google.co.il/search?q={0}", item.ToolTipText.Replace(" ", "+")));
-
+            
             // Details about the checkin
             Predicate<Checkin> checkinFinder = (Checkin c) => { return (c.Place.Location != null) && (c.Place.Location.Latitude == lat) && (c.Place.Location.Longitude == lng); };
             Checkin currCheckin = m_LoggedInUser.Checkins.Find(checkinFinder);
@@ -191,8 +209,8 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                 }
             }
 
-            richTextBoxCheckinDetails.Text = "Place: " + currCheckin.Name + "\n" +
-                                             "Time: " + currCheckin.UpdateTime.ToString() + "\n" +
+            richTextBoxCheckinDetails.Text = "Place: " + currCheckin.Place.Name + "\n" +
+                                             "Time Visited: " + currCheckin.UpdateTime.ToString() + "\n" +
                                              "Friends who was there also: " + names + "\n";
         }
 
@@ -227,54 +245,17 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
             checkButtonPlusZoomEnabled();
         }
 
-        private void addChekinToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (m_LoggedInUser != null)
-            {
-                //m_LoggedInUser.PostStatus(
-                //m_LoggedInUser.Posts[m_LoggedInUser.Posts.Count - 1].Delete();
-                    
-                showMarkersOnMap();
-            }
-        }
-
-        private void removeChekinToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //if (m_LoggedInUser != null)
-            //{
-            //    foreach (Checkin checkin in m_LoggedInUser.Checkins)
-            //    {
-            //        if(checkin.Place.Location.Latitude == lastMarker.Position.Lat &&
-            //           checkin.Place.Location.Longitude == lastMarker.Position.Lng)
-            //        {
-            //            m_LoggedInUser.Checkins.Remove(checkin);
-
-            //            gmap.Overlays.Clear();
-
-            //            break;
-            //        }
-            //    }
-            //}
-
-            showMarkersOnMap();
-        }
 
         private void gmap_OnMarkerLeave(GMapMarker item)
         {
             // set remove chekin as false
-            contextMenuStripAddChekin.Items[1].Enabled = false;
-
-            // Unsave last marker
-            lastMarker = null;
+            contextMenuStripMap.Items[0].Enabled = false; 
         }
 
         private void gmap_OnMarkerEnter(GMapMarker item)
         {
             // set remove chekin as true
-            contextMenuStripAddChekin.Items[1].Enabled = true;
-
-            // Save last marker
-            lastMarker = item;
+            contextMenuStripMap.Items[0].Enabled = true; 
         }
 
 
@@ -361,7 +342,6 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
                    pictureBoxFriendNo2.Visible = true;
                    pictureBoxFriendNo3.Visible = true;
                    pictureBoxFriendNo4.Visible = true;
-
 
                    pictureBoxFriendNo1.LoadAsync(getUserById(list.ElementAt(1).Key).PictureNormalURL);
                    pictureBoxFriendNo2.LoadAsync(m_LoggedInUser.PictureNormalURL);
@@ -534,37 +514,40 @@ namespace B16_Ex01_Roi_302882527_Iris_30580715
          {
              if (m_LoggedInUser != null)
              {
-                 char[] delimiterChars = { '/' };
-                 string[] birthdate = m_LoggedInUser.Birthday.Split(delimiterChars);
-                 int year = Int32.Parse(birthdate[2]);
-                 int month = Int32.Parse(birthdate[1]);
-                 int day = Int32.Parse(birthdate[0]);
-                 //DateTime dt = new DateTime(year, month, day);
-                 //dateTimePickerFrom.Value = dt;
-                 dateTimePickerTo.Value = DateTime.Today;
-                 showMarkersOnMap();
-             }
-         }
+                 // Eearliest checkin date
+                 DateTime earliest = Convert.ToDateTime(m_LoggedInUser.Checkins.Min(record => record.CreatedTime));
 
-         private void contextMenuStripAddChekin_MouseClick(object sender, MouseEventArgs e)
-         {
-             currMaplat = gmap.FromLocalToLatLng(e.X, e.Y).Lat;
-             currMapLng = gmap.FromLocalToLatLng(e.X, e.Y).Lng;
+                 dateTimePickerFrom.Value = earliest;
+                 listBoxFriends.DataSource = m_LoggedInUser.Friends;
+                 listBoxFriends.ValueMember = "Id";
+                 listBoxFriends.DisplayMember = "Name";
+                 listBoxFriends.SelectedIndex = -1;
+                 showYourFacebookMarkersOnMap();
+             }
          }
 
          private void dateTimePickerFrom_ValueChanged(object sender, EventArgs e)
          {
-             showMarkersOnMap();
+             showYourFacebookMarkersOnMap();
          }
 
          private void dateTimePickerTo_ValueChanged(object sender, EventArgs e)
          {
-             showMarkersOnMap();
+             showYourFacebookMarkersOnMap();
+
          }
 
          private void pictureBox4_Click(object sender, EventArgs e)
          {
 
+         }
+
+         private void buttonFriendCheckin_Click(object sender, EventArgs e)
+         {
+             if (listBoxFriends.SelectedIndex != -1)
+             {
+                 showFriendMarkersOnMap((User)listBoxFriends.Items[listBoxFriends.SelectedIndex]);
+             }
          }
     }
 }
